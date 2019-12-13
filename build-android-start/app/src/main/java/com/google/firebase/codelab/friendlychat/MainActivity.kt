@@ -18,8 +18,10 @@
  */
 package com.google.firebase.codelab.friendlychat
 
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
@@ -44,6 +46,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
@@ -131,6 +134,10 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         }
         addMessageImageView.setOnClickListener {
             // Select image for image message on click.
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType("image/*")
+            startActivityForResult(intent, REQUEST_IMAGE)
         }
     }
 
@@ -234,6 +241,48 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
         Log.d(TAG, "onConnectionFailed:$connectionResult")
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
+        if (requestCode == REQUEST_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+            val uri = data.data
+            Log.d(TAG, "Uri: $uri")
+            val tempMessage = FriendlyMessage(null, username, photoUrl, LOADING_IMAGE_URL)
+            firebaseDatabaseReference.child(MESSAGES_CHILD).push()
+                    .setValue(tempMessage) { databaseError, databaseReference ->
+                        if (databaseError == null) {
+                            val key = databaseReference.key
+                            val storageReference = FirebaseStorage.getInstance()
+                                    .getReference(firebaseUser!!.uid)
+                                    .child(key!!)
+                                    .child(uri.lastPathSegment)
+                            putImageInStorage(storageReference, uri, key)
+                        } else {
+                            Log.w(TAG, "Unable to write message to database.", databaseError.toException())
+                        }
+                    }
+        }
+    }
+
+    private fun putImageInStorage(storageReference: StorageReference, uri: Uri, key: String?) {
+        storageReference.putFile(uri).addOnCompleteListener(this@MainActivity) { task1 ->
+            if (task1.isSuccessful) {
+                task1.result!!.metadata!!.reference!!.downloadUrl
+                        .addOnCompleteListener(this@MainActivity) { task2 ->
+                            if (task2.isSuccessful) {
+                                val friendlyMessage = FriendlyMessage(null, username, photoUrl, task2.result.toString())
+                                firebaseDatabaseReference
+                                        .child(MESSAGES_CHILD)
+                                        .child(key!!)
+                                        .setValue(friendlyMessage)
+                            }
+                        }
+            } else {
+                Log.w(TAG, "Image upload task was not successful.", task1.exception)
+            }
+        }
     }
 
     companion object {
