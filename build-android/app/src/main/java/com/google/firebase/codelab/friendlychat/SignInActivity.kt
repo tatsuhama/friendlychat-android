@@ -32,8 +32,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
 class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnClickListener {
-    private val mSignInButton: SignInButton by lazy { findViewById<View>(R.id.sign_in_button) as SignInButton }
-    private val mGoogleApiClient: GoogleApiClient by lazy {
+    private val signInButton: SignInButton by lazy { findViewById<View>(R.id.sign_in_button) as SignInButton }
+    private val googleApiClient: GoogleApiClient by lazy {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -44,13 +44,13 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
                 .build()
     }
     // Firebase instance variables
-    private val mFirebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
         // Set click listeners
-        mSignInButton.setOnClickListener(this)
+        signInButton.setOnClickListener(this)
         // Configure Google Sign In
 
     }
@@ -62,7 +62,7 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
     }
 
     private fun signIn() {
-        val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
+        val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
@@ -89,7 +89,7 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.id)
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
-        mFirebaseAuth.signInWithCredential(credential)
+        firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this) { task ->
                     if (!task.isSuccessful) {
                         Log.d(TAG, "WAT")
