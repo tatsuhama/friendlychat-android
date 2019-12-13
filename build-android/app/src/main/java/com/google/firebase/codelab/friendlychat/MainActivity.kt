@@ -119,11 +119,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         messageEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                if (charSequence.toString().trim { it <= ' ' }.length > 0) {
-                    sendButton.isEnabled = true
-                } else {
-                    sendButton.isEnabled = false
-                }
+                sendButton.isEnabled = charSequence.toString().trim { it <= ' ' }.isNotEmpty()
             }
 
             override fun afterTextChanged(editable: Editable) {}
