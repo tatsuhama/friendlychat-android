@@ -146,12 +146,8 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     }
 
     private fun createAdapter(): FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> {
-        val parser: SnapshotParser<FriendlyMessage> = SnapshotParser<FriendlyMessage> { dataSnapshot ->
-            val friendlyMessage = dataSnapshot.getValue(FriendlyMessage::class.java)!!
-            if (friendlyMessage != null) {
-                friendlyMessage.id = dataSnapshot.key
-            }
-            friendlyMessage
+        val parser: SnapshotParser<FriendlyMessage> = SnapshotParser { dataSnapshot ->
+            dataSnapshot.getValue(FriendlyMessage::class.java)!!.apply { this.id = dataSnapshot.key }
         }
         val messagesRef = firebaseDatabaseReference.child(MESSAGES_CHILD)
         val options = FirebaseRecyclerOptions.Builder<FriendlyMessage>()
@@ -256,27 +252,23 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
-        if (requestCode == REQUEST_IMAGE) {
-            if (resultCode == Activity.RESULT_OK) {
-                if (data != null) {
-                    val uri = data.data
-                    Log.d(TAG, "Uri: $uri")
-                    val tempMessage = FriendlyMessage(null, username, photoUrl, LOADING_IMAGE_URL)
-                    firebaseDatabaseReference.child(MESSAGES_CHILD).push()
-                            .setValue(tempMessage) { databaseError, databaseReference ->
-                                if (databaseError == null) {
-                                    val key = databaseReference.key
-                                    val storageReference = FirebaseStorage.getInstance()
-                                            .getReference(getFirebaseUser()!!.uid)
-                                            .child(key!!)
-                                            .child(uri.lastPathSegment)
-                                    putImageInStorage(storageReference, uri, key)
-                                } else {
-                                    Log.w(TAG, "Unable to write message to database.", databaseError.toException())
-                                }
-                            }
-                }
-            }
+        if (requestCode == REQUEST_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+            val uri = data.data
+            Log.d(TAG, "Uri: $uri")
+            val tempMessage = FriendlyMessage(null, username, photoUrl, LOADING_IMAGE_URL)
+            firebaseDatabaseReference.child(MESSAGES_CHILD).push()
+                    .setValue(tempMessage) { databaseError, databaseReference ->
+                        if (databaseError == null) {
+                            val key = databaseReference.key
+                            val storageReference = FirebaseStorage.getInstance()
+                                    .getReference(getFirebaseUser()!!.uid)
+                                    .child(key!!)
+                                    .child(uri.lastPathSegment)
+                            putImageInStorage(storageReference, uri, key)
+                        } else {
+                            Log.w(TAG, "Unable to write message to database.", databaseError.toException())
+                        }
+                    }
         }
     }
 
