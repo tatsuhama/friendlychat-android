@@ -44,8 +44,6 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.codelab.friendlychat.MainActivity
-import com.google.firebase.codelab.friendlychat.SignInActivity
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -81,7 +79,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private var mFirebaseAuth: FirebaseAuth? = null
     private var mFirebaseUser: FirebaseUser? = null
     private var mFirebaseDatabaseReference: DatabaseReference? = null
-    private var mFirebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage?, MessageViewHolder?>? = null
+    private val firebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> by lazy { createAdapter() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -112,7 +110,57 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         mLinearLayoutManager!!.stackFromEnd = true
         mMessageRecyclerView!!.layoutManager = mLinearLayoutManager
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().reference
-        val parser: SnapshotParser<FriendlyMessage> = SnapshotParser<FriendlyMessage?> { dataSnapshot ->
+
+        firebaseAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                val friendlyMessageCount = firebaseAdapter.getItemCount()
+                val lastVisiblePosition = mLinearLayoutManager!!.findLastCompletelyVisibleItemPosition()
+                // If the recycler view is initially being loaded or the
+// user is at the bottom of the list, scroll to the bottom
+// of the list to show the newly added message.
+                if (lastVisiblePosition == -1 ||
+                        positionStart >= friendlyMessageCount - 1 &&
+                        lastVisiblePosition == positionStart - 1) {
+                    mMessageRecyclerView!!.scrollToPosition(positionStart)
+                }
+            }
+        })
+        mMessageRecyclerView!!.adapter = firebaseAdapter
+        mMessageEditText = findViewById<View>(R.id.messageEditText) as EditText
+        mMessageEditText!!.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                if (charSequence.toString().trim { it <= ' ' }.length > 0) {
+                    mSendButton!!.isEnabled = true
+                } else {
+                    mSendButton!!.isEnabled = false
+                }
+            }
+
+            override fun afterTextChanged(editable: Editable) {}
+        })
+        mSendButton = findViewById<View>(R.id.sendButton) as Button
+        mSendButton!!.setOnClickListener {
+            val friendlyMessage = FriendlyMessage(mMessageEditText!!.text.toString(),
+                    mUsername,
+                    mPhotoUrl,
+                    null /* no image */)
+            mFirebaseDatabaseReference!!.child(MESSAGES_CHILD)
+                    .push().setValue(friendlyMessage)
+            mMessageEditText!!.setText("")
+        }
+        mAddMessageImageView = findViewById<View>(R.id.addMessageImageView) as ImageView
+        mAddMessageImageView!!.setOnClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "image/*"
+            startActivityForResult(intent, REQUEST_IMAGE)
+        }
+    }
+
+    private fun createAdapter(): FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> {
+        val parser: SnapshotParser<FriendlyMessage> = SnapshotParser<FriendlyMessage> { dataSnapshot ->
             val friendlyMessage = dataSnapshot.getValue(FriendlyMessage::class.java)!!
             if (friendlyMessage != null) {
                 friendlyMessage.id = dataSnapshot.key
@@ -123,7 +171,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         val options = FirebaseRecyclerOptions.Builder<FriendlyMessage>()
                 .setQuery(messagesRef, parser)
                 .build()
-        mFirebaseAdapter = object : FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options) {
+        return object : FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options) {
             override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): MessageViewHolder {
                 val inflater = LayoutInflater.from(viewGroup.context)
                 return MessageViewHolder(inflater.inflate(R.layout.item_message, viewGroup, false))
@@ -172,52 +220,6 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 }
             }
         }
-        mFirebaseAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                super.onItemRangeInserted(positionStart, itemCount)
-                val friendlyMessageCount = mFirebaseAdapter.getItemCount()
-                val lastVisiblePosition = mLinearLayoutManager!!.findLastCompletelyVisibleItemPosition()
-                // If the recycler view is initially being loaded or the
-// user is at the bottom of the list, scroll to the bottom
-// of the list to show the newly added message.
-                if (lastVisiblePosition == -1 ||
-                        positionStart >= friendlyMessageCount - 1 &&
-                        lastVisiblePosition == positionStart - 1) {
-                    mMessageRecyclerView!!.scrollToPosition(positionStart)
-                }
-            }
-        })
-        mMessageRecyclerView!!.adapter = mFirebaseAdapter
-        mMessageEditText = findViewById<View>(R.id.messageEditText) as EditText
-        mMessageEditText!!.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                if (charSequence.toString().trim { it <= ' ' }.length > 0) {
-                    mSendButton!!.isEnabled = true
-                } else {
-                    mSendButton!!.isEnabled = false
-                }
-            }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
-        mSendButton = findViewById<View>(R.id.sendButton) as Button
-        mSendButton!!.setOnClickListener {
-            val friendlyMessage = FriendlyMessage(mMessageEditText!!.text.toString(),
-                    mUsername,
-                    mPhotoUrl,
-                    null /* no image */)
-            mFirebaseDatabaseReference!!.child(MESSAGES_CHILD)
-                    .push().setValue(friendlyMessage)
-            mMessageEditText!!.setText("")
-        }
-        mAddMessageImageView = findViewById<View>(R.id.addMessageImageView) as ImageView
-        mAddMessageImageView!!.setOnClickListener {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "image/*"
-            startActivityForResult(intent, REQUEST_IMAGE)
-        }
     }
 
     public override fun onStart() {
@@ -227,13 +229,13 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     }
 
     public override fun onPause() {
-        mFirebaseAdapter!!.stopListening()
+        firebaseAdapter.stopListening()
         super.onPause()
     }
 
     public override fun onResume() {
         super.onResume()
-        mFirebaseAdapter!!.startListening()
+        firebaseAdapter.startListening()
     }
 
     public override fun onDestroy() {
