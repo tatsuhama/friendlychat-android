@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private var mMessageEditText: EditText? = null
     private var mAddMessageImageView: ImageView? = null
     // Firebase instance variables
-    private var mFirebaseAuth: FirebaseAuth? = null
+    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private var mFirebaseUser: FirebaseUser? = null
     private var mFirebaseDatabaseReference: DatabaseReference? = null
     private val firebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> by lazy { createAdapter() }
@@ -87,8 +87,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         // Set default username is anonymous.
         mUsername = ANONYMOUS
         // Initialize Firebase Auth
-        mFirebaseAuth = FirebaseAuth.getInstance()
-        mFirebaseUser = mFirebaseAuth.getCurrentUser()
+        mFirebaseUser = firebaseAuth.getCurrentUser()
         if (mFirebaseUser == null) { // Not signed in, launch the Sign In activity
             startActivity(Intent(this, SignInActivity::class.java))
             finish()
@@ -251,7 +250,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
-                mFirebaseAuth!!.signOut()
+                firebaseAuth!!.signOut()
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient)
                 mUsername = ANONYMOUS
                 startActivity(Intent(this, SignInActivity::class.java))
