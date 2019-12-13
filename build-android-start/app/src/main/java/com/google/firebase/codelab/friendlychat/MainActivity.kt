@@ -18,6 +18,7 @@
  */
 package com.google.firebase.codelab.friendlychat
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -35,6 +36,8 @@ import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
@@ -63,9 +66,26 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private val addMessageImageView: ImageView by lazy { findViewById<View>(R.id.addMessageImageView) as ImageView }
 
     // Firebase instance variables
+    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val firebaseUser: FirebaseUser? get() = firebaseAuth.currentUser
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Initialize Firebase Auth
+        val firebaseUser = this.firebaseUser
+        if (firebaseUser == null) { // Not signed in, launch the Sign In activity
+            startActivity(Intent(this, SignInActivity::class.java))
+            finish()
+            return
+        } else {
+            username = firebaseUser.displayName.orEmpty()
+            if (firebaseUser.photoUrl != null) {
+                photoUrl = firebaseUser.photoUrl.toString()
+            }
+        }
+
         linearLayoutManager.stackFromEnd = true
         messageRecyclerView.layoutManager = linearLayoutManager
         progressBar.visibility = ProgressBar.INVISIBLE
