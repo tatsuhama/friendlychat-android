@@ -22,22 +22,28 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.*
+import com.bumptech.glide.Glide
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.firebase.ui.database.SnapshotParser
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
@@ -68,6 +74,8 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     // Firebase instance variables
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firebaseUser: FirebaseUser? get() = firebaseAuth.currentUser
+    private val firebaseDatabaseReference: DatabaseReference by lazy { FirebaseDatabase.getInstance().reference }
+    private val firebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> by lazy { createAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +96,24 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
 
         linearLayoutManager.stackFromEnd = true
         messageRecyclerView.layoutManager = linearLayoutManager
+
+        firebaseAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                val friendlyMessageCount = firebaseAdapter.itemCount
+                val lastVisiblePosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
+                // If the recycler view is initially being loaded or the
+                // user is at the bottom of the list, scroll to the bottom
+                // of the list to show the newly added message.
+                if (lastVisiblePosition == -1 ||
+                        positionStart >= friendlyMessageCount - 1 &&
+                        lastVisiblePosition == positionStart - 1) {
+                    messageRecyclerView.scrollToPosition(positionStart)
+                }
+            }
+        })
+        messageRecyclerView.adapter = firebaseAdapter
+
         progressBar.visibility = ProgressBar.INVISIBLE
         messageEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
@@ -105,6 +131,64 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         }
     }
 
+    private fun createAdapter(): FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> {
+        val parser: SnapshotParser<FriendlyMessage> = SnapshotParser { dataSnapshot ->
+            dataSnapshot.getValue(FriendlyMessage::class.java)!!.apply { this.id = dataSnapshot.key }
+        }
+        val messagesRef = firebaseDatabaseReference.child(MESSAGES_CHILD)
+        val options = FirebaseRecyclerOptions.Builder<FriendlyMessage>()
+                .setQuery(messagesRef, parser)
+                .build()
+
+        return object : FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options) {
+            override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): MessageViewHolder {
+                val inflater = LayoutInflater.from(viewGroup.context)
+                return MessageViewHolder(inflater.inflate(R.layout.item_message, viewGroup, false))
+            }
+
+            override fun onBindViewHolder(viewHolder: MessageViewHolder,
+                                          position: Int,
+                                          friendlyMessage: FriendlyMessage) {
+                progressBar.visibility = ProgressBar.INVISIBLE
+                if (friendlyMessage.text != null) {
+                    viewHolder.messageTextView.text = friendlyMessage.text
+                    viewHolder.messageTextView.visibility = TextView.VISIBLE
+                    viewHolder.messageImageView.visibility = ImageView.GONE
+                } else if (friendlyMessage.imageUrl != null) {
+                    val imageUrl = friendlyMessage.imageUrl!!
+                    if (imageUrl.startsWith("gs://")) {
+                        val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl)
+                        storageReference.downloadUrl.addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val downloadUrl = task.result.toString()
+                                Glide.with(viewHolder.messageImageView.context)
+                                        .load(downloadUrl)
+                                        .into(viewHolder.messageImageView)
+                            } else {
+                                Log.w(TAG, "Getting download url was not successful.", task.exception)
+                            }
+                        }
+                    } else {
+                        Glide.with(viewHolder.messageImageView.context)
+                                .load(friendlyMessage.imageUrl)
+                                .into(viewHolder.messageImageView)
+                    }
+                    viewHolder.messageImageView.visibility = ImageView.VISIBLE
+                    viewHolder.messageTextView.visibility = TextView.GONE
+                }
+                viewHolder.messengerTextView.text = friendlyMessage.name
+                if (friendlyMessage.photoUrl == null) {
+                    val drawable = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_account_circle_black_36dp)
+                    viewHolder.messengerImageView.setImageDrawable(drawable)
+                } else {
+                    Glide.with(this@MainActivity)
+                            .load(friendlyMessage.photoUrl)
+                            .into(viewHolder.messengerImageView)
+                }
+            }
+        }
+    }
+
     public override fun onStart() {
         super.onStart()
         // Check if user is signed in.
@@ -112,11 +196,13 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     }
 
     public override fun onPause() {
+        firebaseAdapter.stopListening()
         super.onPause()
     }
 
     public override fun onResume() {
         super.onResume()
+        firebaseAdapter.startListening()
     }
 
     public override fun onDestroy() {
