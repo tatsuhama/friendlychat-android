@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Firebase Android Codelab - Build Friendly Chat</title>
+  <link rel="stylesheet" href="friendlychat_android_files/css.css">
+  <link rel="stylesheet" href="friendlychat_android_files/icon.css">
+  <link rel="stylesheet" href="friendlychat_android_files/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+<script src="friendlychat_android_files/analytics.js"></script></head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14" environment="web" category="null"></google-codelab-analytics>
+  <google-codelab codelab-gaid="" id="firebase-android" environment="web" feedback-link="https://github.com/firebase/friendlychat-android/issues" selected="6" google-codelab-ready="" codelab-title="Firebase Android Codelab - Build Friendly Chat" anayltics-ready="anayltics-ready"><div id="drawer"><div class="codelab-time-container"><div class="time-remaining" title="Time remaining"><i class="material-icons">access_time</i>6 mins remaining</div></div><div class="steps"><ol><li completed=""><a href="#0"><span class="step"><span>Overview</span></span></a></li><li completed=""><a href="#1"><span class="step"><span>Get the sample code</span></span></a></li><li completed=""><a href="#2"><span class="step"><span>Import the starter app</span></span></a></li><li completed=""><a href="#3"><span class="step"><span>Create Firebase console project</span></span></a></li><li completed=""><a href="#4"><span class="step"><span>Add Firebase</span></span></a></li><li completed=""><a href="#5"><span class="step"><span>Run the starter app</span></span></a></li><li completed="" selected=""><a href="#6"><span class="step"><span>Enable Authentication</span></span></a></li><li><a href="#7"><span class="step"><span>Read Messages</span></span></a></li><li><a href="#8"><span class="step"><span>Send Messages</span></span></a></li><li><a href="#9"><span class="step"><span>Congratulations!</span></span></a></li></ol></div><div class="metadata"><a target="_blank" href="https://github.com/firebase/friendlychat-android/issues"><i class="material-icons">bug_report</i> Report a mistake</a></div></div><div id="codelab-title"><div id="codelab-nav-buttons"><a href="https://codelabs.developers.google.com/" id="arrow-back"><i class="material-icons">close</i></a><a href="#" id="menu"><i class="material-icons">menu</i></a></div><h1 class="title">Firebase Android Codelab - Build Friendly Chat</h1><div class="codelab-time-container"><div class="time-remaining" title="Time remaining"><i class="material-icons">access_time</i>6 mins remaining</div></div><devsite-user></devsite-user></div><div id="main"><div id="steps"><google-codelab-step label="Overview" duration="2" step="1"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">1. Overview</h2>
+        <p class="image-container"><img style="width: 173.00px" src="friendlychat_android_files/6757a47d00932b5c.png"></p>
+<p>Image: Working Friendly Chat app.</p>
+<p>Welcome to the Friendly Chat codelab. In this codelab, you'll learn 
+how to use the Firebase platform to create a chat app on Android.</p>
+<h3 is-upgraded="">What you learn<strong> to do</strong></h3>
+<ul>
+<li>Allow users to sign in.</li>
+<li>Sync data using the Firebase Realtime Database.</li>
+<li>Store binary files in Firebase </li>
+</ul>
+<h3 is-upgraded="">What you need</h3>
+<ul>
+<li><a href="https://developer.android.com/studio" target="_blank">Android Studio</a> version 3.4+.</li>
+<li>Sample code.</li>
+<li>A test device with Android 2.3+ and Google Play services 9.8 or later, or an <a href="https://developer.android.com/studio/run/emulator#install" target="_blank">Emulator</a> with Google Play services 9.8 or later</li>
+<li>If using a device, a connection cable.</li>
+</ul>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Get the sample code" duration="5" step="2"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">2. Get the sample code</h2>
+        <p>Clone the GitHub repository from the command line:</p>
+<pre>$ git clone https://github.com/firebase/friendlychat-android</pre>
+<aside class="special"><p>The "friendlychat-android" repository contains two directories:</p>
+<ul>
+<li><img alt="android_studio_folder.png" style="width: 20.00px" src="friendlychat_android_files/bb745dc85ae69f6b.png"><strong>build-android-start</strong>—Starting code that you build upon in this codelab.</li>
+<li><img alt="android_studio_folder.png" style="width: 20.00px" src="friendlychat_android_files/bb745dc85ae69f6b.png"><strong>build-android</strong>—Completed code for the finished sample app.</li>
+</ul>
+<p><strong>Note</strong>: If you want to run the finished app, you have 
+to create a project in the Firebase console corresponding to the package
+ name and SHA1. See <a href="https://codelabs.developers.google.com/codelabs/firebase-android/#3" target="_blank">Create Firebase Console Project</a>
+ for the command. Also you will have to enable Google as an Auth 
+Provider; do this in the Authentication section of the Firebase console.
+ </p>
+</aside>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Import the starter app" duration="2" step="3"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">3. Import the starter app</h2>
+        <p>From Android Studio, select the <code>build-android-start</code> directory (<img alt="android_studio_folder.png" style="width: 20.00px" src="friendlychat_android_files/bb745dc85ae69f6b.png">)   from the sample code download (<strong>File</strong> &gt; <strong>Open </strong>&gt; .../friendlychat-android/build-android-start).</p>
+<p>You should now have the android-start project open in Android Studio.
+ If you see a warning about a google-services.json file missing, don't 
+worry. It will be added in the next step.</p>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Create Firebase console project" duration="1" step="4"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">4. Create Firebase console project</h2>
+        <h2 is-upgraded=""><strong>Add Firebase to the project</strong></h2>
+<ol type="1" start="1">
+<li>Go to the <a href="https://console.firebase.google.com/" target="_blank">Firebase console</a>.</li>
+<li>Select <strong>Add project</strong>.</li>
+<li>Select or enter a Project name.</li>
+<li>Follow the remaining setup steps in the Firebase console, then click
+ Create project (or Add Firebase, if you're using an existing Google 
+project).</li>
+</ol>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Add Firebase" duration="1" step="5"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">5. Add Firebase</h2>
+        <ol type="1" start="1">
+<li>From the overview screen of your new project, click the Android icon to launch the setup workflow.</li>
+<li>Enter the codelab's package name: <code>com.google.firebase.codelab.friendlychat</code></li>
+<li>Enter the SHA1 of your signing keystore. If you are using the 
+standard debug keystore, use the command below to find the SHA1 hash:</li>
+</ol>
+<pre>keytool -alias androiddebugkey -keystore ~/.android/debug.keystore -list -v -storepass android</pre>
+<aside class="special"><p><strong>Note</strong>: Your debug keystore, usually called "debug.keystore", is typically located at </p>
+<p>$HOME/.android/debug.keystore.  If this file does not exist, Android 
+Studio will create it for you the first time you run any app.</p>
+<p>See <a href="https://developers.google.com/android/guides/client-auth" target="_blank">here</a> for more detail on finding SHA1.</p>
+</aside>
+<h3 is-upgraded=""><strong>Add google-services.json file to your app</strong></h3>
+<p>After adding the package name and SHA1 and selecting Register<strong>, Click Download google-services.json</strong> to obtain your Firebase Android config file then copy the google-services.json file into the <em><code>app</code></em> directory in your project. After the file is downloaded you can <strong>Skip</strong> the next steps shown in the console (they've already been done for you in the build-android-start project).</p>
+<h3 is-upgraded=""><strong>Add google-services plugin to your app</strong></h3>
+<p>The google-services plugin uses the google-services.json file to 
+configure your application to use Firebase. The following line should 
+already be added to the end of the build.gradle file in the <em><code>app</code></em> directory of your project (check to confirm):</p>
+<pre><code><span class="pln">apply plugin</span><span class="pun">:</span><span class="pln"> </span><span class="str">'com.google.gms.google-services'</span></code></pre>
+<h3 is-upgraded=""><strong>Sync your project with gradle files</strong></h3>
+<p>To be sure that all dependencies are available to your app, you 
+should sync your project with gradle files at this point. Select <strong>File &gt; Sync Project with Gradle Files</strong> from the Android Studio toolbar.</p>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Run the starter app" duration="1" step="6"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">6. Run the starter app</h2>
+        <p>Now that you have imported the project into Android Studio and configured the <code>google-services</code> plugin with your JSON file, you are ready to run the app for the first time.  Connect your Android device, and click <strong>Run</strong> (<img alt="execute.png" style="width: 20.00px" src="friendlychat_android_files/74540ff4e857014c.png">)in the Android Studio toolbar.</p>
+<p>The app should launch on your device. At this point, you should see 
+an empty message list, and sending and receiving messages will not work.
+ In the next section, you authenticate users so they can use Friendly 
+Chat.</p>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Enable Authentication" duration="5" step="7" selected=""><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">7. Enable Authentication</h2>
+        <p>Let's require a user to sign in before reading or posting any Friendly Chat messages.</p>
+<h3 is-upgraded=""><strong>Firebase Realtime Database Rules</strong></h3>
+<p>Access to your Firebase Database is configured by a set of rules written in a JSON configuration language.</p>
+<p>Go to your project in the Firebase console and select <strong>Database</strong>. Select the <strong>Realtime Database</strong> option (not Cloud Firestore). If prompted for security rules, with choices to start in either <strong>test mode</strong> or <strong>locked mode</strong>, choose <strong>locked mode</strong>. Once the default rules are established, select the <strong>Rules</strong> tab and update the rules configuration with the following:</p>
+<pre><code><span class="pun">{</span><span class="pln">
+  </span><span class="str">"rules"</span><span class="pun">:</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="str">".read"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"auth != null"</span><span class="pun">,</span><span class="pln">
+    </span><span class="str">".write"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"auth != null"</span><span class="pln">
+  </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+<p>Click "Publish" to publish the new rules.</p>
+<p>For more information on how this works (including documentation on the "auth" variable) see the Firebase <a href="https://firebase.google.com/docs/database/security/quickstart" target="_blank">security documentation</a>.</p>
+<h3 is-upgraded=""><strong>Configure Authentication APIs</strong></h3>
+<p>Before your application can access the Firebase Authentication APIs on behalf of your users, you will have to enable it </p>
+<ol type="1" start="1">
+<li>Navigate to the <a href="http://console.firebase.google.com/" target="_blank">Firebase console</a> and select your project</li>
+<li>Select <strong>Authentication</strong></li>
+<li>Select the <strong>Sign In Method</strong> tab</li>
+<li>Toggle the <strong>Google</strong> switch to enabled (blue)</li>
+<li>Set a support email.</li>
+<li>Press <strong>Save</strong> on the resulting dialog</li>
+</ol>
+<p>If you get errors later in this codelab with the message 
+"CONFIGURATION_NOT_FOUND", come back to this step and double check your 
+work.</p>
+<h3 is-upgraded=""><strong>Add Firebase Auth dependency</strong></h3>
+<p>The firebase-auth SDK allows easy management of authenticated users 
+of your application. Confirm the existence of this dependency in your <code>app/build.gradle</code> file.</p>
+<h3 is-upgraded="">app/build.gradle</h3>
+<pre><code><span class="pln">implementation </span><span class="str">'com.google.firebase:firebase-auth'</span></code></pre>
+<p>Add the Auth instance variables in the <code>MainActivity</code> class under the <code>// Firebase instance variables</code> comment:</p>
+<h3 is-upgraded="">MainActivity.java (instance variable)</h3>
+<pre><code><span class="com">// Firebase instance variables</span><span class="pln">
+</span><span class="kwd">private</span><span class="pln"> </span><span class="typ">FirebaseAuth</span><span class="pln"> mFirebaseAuth</span><span class="pun">;</span><span class="pln">
+</span><span class="kwd">private</span><span class="pln"> </span><span class="typ">FirebaseUser</span><span class="pln"> mFirebaseUser</span><span class="pun">;</span></code></pre>
+<h3 is-upgraded=""><strong>Check for current user</strong></h3>
+<p>Now let's modify <code>MainActivity.java</code> to send the user to the sign-in screen whenever they open the app and are unauthenticated. </p>
+<p>Add the following to the <code>onCreate</code> method <strong>after </strong><code>mUsername</code> has been initialized:</p>
+<p><strong>MainActivity.java</strong></p>
+<pre><code><span class="com">// Initialize Firebase Auth</span><span class="pln">
+mFirebaseAuth </span><span class="pun">=</span><span class="pln"> </span><span class="typ">FirebaseAuth</span><span class="pun">.</span><span class="pln">getInstance</span><span class="pun">();</span><span class="pln">
+mFirebaseUser </span><span class="pun">=</span><span class="pln"> mFirebaseAuth</span><span class="pun">.</span><span class="pln">getCurrentUser</span><span class="pun">();</span><span class="pln">
+</span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">mFirebaseUser </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// Not signed in, launch the Sign In activity</span><span class="pln">
+    startActivity</span><span class="pun">(</span><span class="kwd">new</span><span class="pln"> </span><span class="typ">Intent</span><span class="pun">(</span><span class="kwd">this</span><span class="pun">,</span><span class="pln"> </span><span class="typ">SignInActivity</span><span class="pun">.</span><span class="kwd">class</span><span class="pun">));</span><span class="pln">
+    finish</span><span class="pun">();</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    mUsername </span><span class="pun">=</span><span class="pln"> mFirebaseUser</span><span class="pun">.</span><span class="pln">getDisplayName</span><span class="pun">();</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">mFirebaseUser</span><span class="pun">.</span><span class="pln">getPhotoUrl</span><span class="pun">()</span><span class="pln"> </span><span class="pun">!=</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        mPhotoUrl </span><span class="pun">=</span><span class="pln"> mFirebaseUser</span><span class="pun">.</span><span class="pln">getPhotoUrl</span><span class="pun">().</span><span class="pln">toString</span><span class="pun">();</span><span class="pln">
+    </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+<p>Then add a new case to <code>onOptionsItemSelected()</code> to handle the sign out button:</p>
+<p><strong>MainActivity.java</strong></p>
+<pre><code><span class="pln">    </span><span class="lit">@Override</span><span class="pln">
+    </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">boolean</span><span class="pln"> onOptionsItemSelected</span><span class="pun">(</span><span class="typ">MenuItem</span><span class="pln"> item</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        </span><span class="kwd">switch</span><span class="pln"> </span><span class="pun">(</span><span class="pln">item</span><span class="pun">.</span><span class="pln">getItemId</span><span class="pun">())</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+            </span><span class="kwd">case</span><span class="pln"> R</span><span class="pun">.</span><span class="pln">id</span><span class="pun">.</span><span class="pln">sign_out_menu</span><span class="pun">:</span><span class="pln">
+                mFirebaseAuth</span><span class="pun">.</span><span class="pln">signOut</span><span class="pun">();</span><span class="pln">
+                </span><span class="typ">Auth</span><span class="pun">.</span><span class="typ">GoogleSignInApi</span><span class="pun">.</span><span class="pln">signOut</span><span class="pun">(</span><span class="pln">mGoogleApiClient</span><span class="pun">);</span><span class="pln">
+                mUsername </span><span class="pun">=</span><span class="pln"> ANONYMOUS</span><span class="pun">;</span><span class="pln">
+                startActivity</span><span class="pun">(</span><span class="kwd">new</span><span class="pln"> </span><span class="typ">Intent</span><span class="pun">(</span><span class="kwd">this</span><span class="pun">,</span><span class="pln"> </span><span class="typ">SignInActivity</span><span class="pun">.</span><span class="kwd">class</span><span class="pun">));</span><span class="pln">
+                finish</span><span class="pun">();</span><span class="pln">
+                </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">;</span><span class="pln">
+            </span><span class="kwd">default</span><span class="pun">:</span><span class="pln">
+                </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">super</span><span class="pun">.</span><span class="pln">onOptionsItemSelected</span><span class="pun">(</span><span class="pln">item</span><span class="pun">);</span><span class="pln">
+        </span><span class="pun">}</span><span class="pln">
+    </span><span class="pun">}</span></code></pre>
+<p>Now we have all of the logic in place to send the user to the sign-in
+ screen when necessary. Next we need to implement the sign-in screen to 
+properly authenticate users.</p>
+<h3 is-upgraded=""><strong>Implement the Sign-In screen</strong></h3>
+<p>Open the file <code>SignInActivity.java</code>.  Here a simple 
+Sign-In button is used to initiate authentication. In this step you will
+ implement the logic to Sign-In with Google, and then use that Google 
+account to authenticate with Firebase.</p>
+<p>Add an Auth instance variable in the <code>SignInActivity</code> class under the <code>// Firebase instance variables</code> comment:</p>
+<p><strong>SignInActivity.java</strong></p>
+<pre><code><span class="com">// Firebase instance variables</span><span class="pln">
+</span><span class="kwd">private</span><span class="pln"> </span><span class="typ">FirebaseAuth</span><span class="pln"> mFirebaseAuth</span><span class="pun">;</span></code></pre>
+<p>Then, edit the <code>onCreate()</code> method to initialize Firebase in the same way you did in <code>MainActivity</code>:</p>
+<p><strong>SignInActivity.java</strong></p>
+<pre><code><span class="com">// Initialize FirebaseAuth</span><span class="pln">
+mFirebaseAuth </span><span class="pun">=</span><span class="pln"> </span><span class="typ">FirebaseAuth</span><span class="pun">.</span><span class="pln">getInstance</span><span class="pun">();</span></code></pre>
+<p>Next, initiate signing in with Google. Update <code>SignInActivity</code>'s <code>onClick</code> method to look like this:</p>
+<p><strong>SignInActivity.java</strong></p>
+<pre><code><span class="lit">@Override</span><span class="pln">
+</span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onClick</span><span class="pun">(</span><span class="typ">View</span><span class="pln"> v</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   </span><span class="kwd">switch</span><span class="pln"> </span><span class="pun">(</span><span class="pln">v</span><span class="pun">.</span><span class="pln">getId</span><span class="pun">())</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+       </span><span class="kwd">case</span><span class="pln"> R</span><span class="pun">.</span><span class="pln">id</span><span class="pun">.</span><span class="pln">sign_in_button</span><span class="pun">:</span><span class="pln">
+           signIn</span><span class="pun">();</span><span class="pln">
+           </span><span class="kwd">break</span><span class="pun">;</span><span class="pln">
+   </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+<p>Add the required signIn method that actually presents the user with the Google Sign-In UI.</p>
+<p><strong>SignInActivity.java</strong></p>
+<pre><code><span class="kwd">private</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> signIn</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">Intent</span><span class="pln"> signInIntent </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Auth</span><span class="pun">.</span><span class="typ">GoogleSignInApi</span><span class="pun">.</span><span class="pln">getSignInIntent</span><span class="pun">(</span><span class="pln">mGoogleApiClient</span><span class="pun">);</span><span class="pln">
+    startActivityForResult</span><span class="pun">(</span><span class="pln">signInIntent</span><span class="pun">,</span><span class="pln"> RC_SIGN_IN</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+<p>Next, add the <code>onActivityResult</code> method to <code>SignInActivity</code>
+ to handle the sign in result. If the result of the Google Sign-In was 
+successful, use the account to authenticate with Firebase.</p>
+<p><strong>SignInActivity.java</strong></p>
+<pre><code><span class="lit">@Override</span><span class="pln">
+</span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onActivityResult</span><span class="pun">(</span><span class="kwd">int</span><span class="pln"> requestCode</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">int</span><span class="pln"> resultCode</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Intent</span><span class="pln"> data</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">super</span><span class="pun">.</span><span class="pln">onActivityResult</span><span class="pun">(</span><span class="pln">requestCode</span><span class="pun">,</span><span class="pln"> resultCode</span><span class="pun">,</span><span class="pln"> data</span><span class="pun">);</span><span class="pln">
+
+    </span><span class="com">// Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">requestCode </span><span class="pun">==</span><span class="pln"> RC_SIGN_IN</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        </span><span class="typ">GoogleSignInResult</span><span class="pln"> result </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Auth</span><span class="pun">.</span><span class="typ">GoogleSignInApi</span><span class="pun">.</span><span class="pln">getSignInResultFromIntent</span><span class="pun">(</span><span class="pln">data</span><span class="pun">);</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">result</span><span class="pun">.</span><span class="pln">isSuccess</span><span class="pun">())</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+            </span><span class="com">// Google Sign-In was successful, authenticate with Firebase</span><span class="pln">
+            </span><span class="typ">GoogleSignInAccount</span><span class="pln"> account </span><span class="pun">=</span><span class="pln"> result</span><span class="pun">.</span><span class="pln">getSignInAccount</span><span class="pun">();</span><span class="pln">
+            firebaseAuthWithGoogle</span><span class="pun">(</span><span class="pln">account</span><span class="pun">);</span><span class="pln">
+        </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+            </span><span class="com">// Google Sign-In failed</span><span class="pln">
+            </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">e</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Google Sign-In failed."</span><span class="pun">);</span><span class="pln">
+        </span><span class="pun">}</span><span class="pln">
+    </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+</span></code></pre>
+<p>Add the required <code>firebaseAuthWithGoogle</code> method to authenticate with the signed in Google account:</p>
+<p><strong>SignInActivity.java</strong></p>
+<pre><code><span class="kwd">private</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> firebaseAuthWithGoogle</span><span class="pun">(</span><span class="typ">GoogleSignInAccount</span><span class="pln"> acct</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">d</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"firebaseAuthWithGooogle:"</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> acct</span><span class="pun">.</span><span class="pln">getId</span><span class="pun">());</span><span class="pln">
+    </span><span class="typ">AuthCredential</span><span class="pln"> credential </span><span class="pun">=</span><span class="pln"> </span><span class="typ">GoogleAuthProvider</span><span class="pun">.</span><span class="pln">getCredential</span><span class="pun">(</span><span class="pln">acct</span><span class="pun">.</span><span class="pln">getIdToken</span><span class="pun">(),</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">);</span><span class="pln">
+    mFirebaseAuth</span><span class="pun">.</span><span class="pln">signInWithCredential</span><span class="pun">(</span><span class="pln">credential</span><span class="pun">)</span><span class="pln">
+            </span><span class="pun">.</span><span class="pln">addOnCompleteListener</span><span class="pun">(</span><span class="kwd">this</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">OnCompleteListener</span><span class="pun">&lt;</span><span class="typ">AuthResult</span><span class="pun">&gt;()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                </span><span class="lit">@Override</span><span class="pln">
+                </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onComplete</span><span class="pun">(</span><span class="lit">@NonNull</span><span class="pln"> </span><span class="typ">Task</span><span class="pun">&lt;</span><span class="typ">AuthResult</span><span class="pun">&gt;</span><span class="pln"> task</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                    </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">d</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"signInWithCredential:onComplete:"</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> task</span><span class="pun">.</span><span class="pln">isSuccessful</span><span class="pun">());</span><span class="pln">
+
+                    </span><span class="com">// If sign in fails, display a message to the user. If sign in succeeds</span><span class="pln">
+                    </span><span class="com">// the auth state listener will be notified and logic to handle the</span><span class="pln">
+                    </span><span class="com">// signed in user can be handled in the listener.</span><span class="pln">
+                    </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(!</span><span class="pln">task</span><span class="pun">.</span><span class="pln">isSuccessful</span><span class="pun">())</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                        </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">w</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"signInWithCredential"</span><span class="pun">,</span><span class="pln"> task</span><span class="pun">.</span><span class="pln">getException</span><span class="pun">());</span><span class="pln">
+                        </span><span class="typ">Toast</span><span class="pun">.</span><span class="pln">makeText</span><span class="pun">(</span><span class="typ">SignInActivity</span><span class="pun">.</span><span class="kwd">this</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Authentication failed."</span><span class="pun">,</span><span class="pln">
+                                </span><span class="typ">Toast</span><span class="pun">.</span><span class="pln">LENGTH_SHORT</span><span class="pun">).</span><span class="pln">show</span><span class="pun">();</span><span class="pln">
+                    </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                        startActivity</span><span class="pun">(</span><span class="kwd">new</span><span class="pln"> </span><span class="typ">Intent</span><span class="pun">(</span><span class="typ">SignInActivity</span><span class="pun">.</span><span class="kwd">this</span><span class="pun">,</span><span class="pln"> </span><span class="typ">MainActivity</span><span class="pun">.</span><span class="kwd">class</span><span class="pun">));</span><span class="pln">
+                        finish</span><span class="pun">();</span><span class="pln">
+                    </span><span class="pun">}</span><span class="pln">
+                </span><span class="pun">}</span><span class="pln">
+            </span><span class="pun">});</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+<p>That's it! You've implemented authentication using Google as an 
+Identity Provider in just a few method calls and without needing to 
+manage any server-side configuration.</p>
+<h3 is-upgraded=""><strong>Test your work</strong></h3>
+<p>Run the app on your device. You should be immediately sent to the 
+sign-in screen. Tap the Google Sign-In button. You should then be sent 
+to the messaging screen if everything worked well.</p>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Read Messages" duration="1" step="8"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">8. Read Messages</h2>
+        <h3 is-upgraded=""><strong>Import Messages</strong></h3>
+<ol type="1" start="1">
+<li>In your project in Firebase console, select <strong>Database</strong> on the left navigation menu.</li>
+<li>Select Realtime Database option.</li>
+</ol>
+<aside class="special"><p><strong>Note</strong>: If you are presented 
+with database creation option, please select Realtime database create 
+option and apply the rules as done in previous step.</p>
+</aside>
+<ol type="1" start="3">
+<li>In the overflow menu of the Data tab, select <strong>Import JSON</strong>. </li>
+<li>Browse to the initial_messages.json file in the root of the cloned repository, and select it. </li>
+<li>Click <strong>Import</strong>.</li>
+</ol>
+<aside class="special"><p><strong>Note</strong>: This replaces any data currently in your database.</p>
+</aside>
+<p>After importing the JSON file, your database should look like this:</p>
+<pre><code><span class="pln">root
+        messages
+                </span><span class="pun">-</span><span class="pln">K2ib4H77rj0LYewF7dP
+                        text</span><span class="pun">:</span><span class="pln"> </span><span class="str">"hello"</span><span class="pln">
+                        name</span><span class="pun">:</span><span class="pln"> </span><span class="str">"anonymous"</span><span class="pln">
+                </span><span class="pun">-</span><span class="pln">K2ib5JHRbbL0NrztUfO
+                        text</span><span class="pun">:</span><span class="pln"> </span><span class="str">"how are you"</span><span class="pln">
+                        name</span><span class="pun">:</span><span class="pln"> </span><span class="str">"anonymous"</span><span class="pln">
+                </span><span class="pun">-</span><span class="pln">K2ib62mjHh34CAUbide
+                        text</span><span class="pun">:</span><span class="pln"> </span><span class="str">"i am fine"</span><span class="pln">
+                        name</span><span class="pun">:</span><span class="pln"> </span><span class="str">"anonymous"</span></code></pre>
+<h3 is-upgraded="">Add Firebase Realtime Database and Firebase Storage dependencies</h3>
+<p>In the dependencies block of the app/build.gradle file, the following
+ dependencies should be included. For this codelab, they are already 
+added for convenience; confirm this by looking in the app/build.gradle 
+file:</p>
+<h3 is-upgraded="">Dependency in app/build.gradle</h3>
+<pre><code><span class="pln">implementation </span><span class="str">'com.google.firebase:firebase-database'</span><span class="pln">
+implementation </span><span class="str">'com.google.firebase:firebase-storage'</span></code></pre>
+<h3 is-upgraded="">Synchronize messages</h3>
+<p>In this section we add code that synchronizes newly added messages to the app UI by:</p>
+<ul>
+<li>Initializing the Firebase Realtime Database and adding a listener to handle changes made to the data.</li>
+<li>Updating the <code>RecyclerView</code> adapter so new messages will be shown.</li>
+<li>Adding the Database instance variables with your other Firebase instance variables in the <code>MainActivity</code> class:</li>
+</ul>
+<h3 is-upgraded="">MainActivity.java</h3>
+<pre><code><span class="com">// Firebase instance variables</span><span class="pln">
+</span><span class="pun">...</span><span class="pln">
+</span><span class="kwd">private</span><span class="pln"> </span><span class="typ">DatabaseReference</span><span class="pln"> mFirebaseDatabaseReference</span><span class="pun">;</span><span class="pln">
+</span><span class="kwd">private</span><span class="pln"> </span><span class="typ">FirebaseRecyclerAdapter</span><span class="pun">&lt;</span><span class="typ">FriendlyMessage</span><span class="pun">,</span><span class="pln"> </span><span class="typ">MessageViewHolder</span><span class="pun">&gt;</span><span class="pln">
+        mFirebaseAdapter</span><span class="pun">;</span></code></pre>
+<p>Modify your MainActivity's <code>onCreate</code> method by replacing <em><code>mProgressBar.setVisibility(ProgressBar.INVISIBLE);</code></em><em> </em>with
+ the code defined below. This code initially adds all existing messages 
+and then listens for new child entries under the messages path in your 
+Firebase Realtime Database. It adds a new element to the UI for each 
+message:</p>
+<h3 is-upgraded="">MainActivity.java</h3>
+<pre><code><span class="com">// New child entries</span><span class="pln">
+mFirebaseDatabaseReference </span><span class="pun">=</span><span class="pln"> </span><span class="typ">FirebaseDatabase</span><span class="pun">.</span><span class="pln">getInstance</span><span class="pun">().</span><span class="pln">getReference</span><span class="pun">();</span><span class="pln">
+</span><span class="typ">SnapshotParser</span><span class="pun">&lt;</span><span class="typ">FriendlyMessage</span><span class="pun">&gt;</span><span class="pln"> parser </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">SnapshotParser</span><span class="pun">&lt;</span><span class="typ">FriendlyMessage</span><span class="pun">&gt;()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+            </span><span class="lit">@Override</span><span class="pln">
+            </span><span class="kwd">public</span><span class="pln"> </span><span class="typ">FriendlyMessage</span><span class="pln"> parseSnapshot</span><span class="pun">(</span><span class="typ">DataSnapshot</span><span class="pln"> dataSnapshot</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                </span><span class="typ">FriendlyMessage</span><span class="pln"> friendlyMessage </span><span class="pun">=</span><span class="pln"> dataSnapshot</span><span class="pun">.</span><span class="pln">getValue</span><span class="pun">(</span><span class="typ">FriendlyMessage</span><span class="pun">.</span><span class="kwd">class</span><span class="pun">);</span><span class="pln">
+                </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">friendlyMessage </span><span class="pun">!=</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                    friendlyMessage</span><span class="pun">.</span><span class="pln">setId</span><span class="pun">(</span><span class="pln">dataSnapshot</span><span class="pun">.</span><span class="pln">getKey</span><span class="pun">());</span><span class="pln">
+                </span><span class="pun">}</span><span class="pln">
+                </span><span class="kwd">return</span><span class="pln"> friendlyMessage</span><span class="pun">;</span><span class="pln">
+            </span><span class="pun">}</span><span class="pln">
+        </span><span class="pun">};</span><span class="pln">
+
+</span><span class="typ">DatabaseReference</span><span class="pln"> messagesRef </span><span class="pun">=</span><span class="pln"> mFirebaseDatabaseReference</span><span class="pun">.</span><span class="pln">child</span><span class="pun">(</span><span class="pln">MESSAGES_CHILD</span><span class="pun">);</span><span class="pln">
+        </span><span class="typ">FirebaseRecyclerOptions</span><span class="pun">&lt;</span><span class="typ">FriendlyMessage</span><span class="pun">&gt;</span><span class="pln"> options </span><span class="pun">=</span><span class="pln">
+                </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">FirebaseRecyclerOptions</span><span class="pun">.</span><span class="typ">Builder</span><span class="pun">&lt;</span><span class="typ">FriendlyMessage</span><span class="pun">&gt;()</span><span class="pln">
+                        </span><span class="pun">.</span><span class="pln">setQuery</span><span class="pun">(</span><span class="pln">messagesRef</span><span class="pun">,</span><span class="pln"> parser</span><span class="pun">)</span><span class="pln">
+                        </span><span class="pun">.</span><span class="pln">build</span><span class="pun">();</span><span class="pln">
+mFirebaseAdapter </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">FirebaseRecyclerAdapter</span><span class="pun">&lt;</span><span class="typ">FriendlyMessage</span><span class="pun">,</span><span class="pln"> </span><span class="typ">MessageViewHolder</span><span class="pun">&gt;(</span><span class="pln">options</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+            </span><span class="lit">@Override</span><span class="pln">
+            </span><span class="kwd">public</span><span class="pln"> </span><span class="typ">MessageViewHolder</span><span class="pln"> onCreateViewHolder</span><span class="pun">(</span><span class="typ">ViewGroup</span><span class="pln"> viewGroup</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">int</span><span class="pln"> i</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                </span><span class="typ">LayoutInflater</span><span class="pln"> inflater </span><span class="pun">=</span><span class="pln"> </span><span class="typ">LayoutInflater</span><span class="pun">.</span><span class="kwd">from</span><span class="pun">(</span><span class="pln">viewGroup</span><span class="pun">.</span><span class="pln">getContext</span><span class="pun">());</span><span class="pln">
+                </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">MessageViewHolder</span><span class="pun">(</span><span class="pln">inflater</span><span class="pun">.</span><span class="pln">inflate</span><span class="pun">(</span><span class="pln">R</span><span class="pun">.</span><span class="pln">layout</span><span class="pun">.</span><span class="pln">item_message</span><span class="pun">,</span><span class="pln"> viewGroup</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">));</span><span class="pln">
+            </span><span class="pun">}</span><span class="pln">
+            
+            </span><span class="lit">@Override</span><span class="pln">
+            </span><span class="kwd">protected</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onBindViewHolder</span><span class="pun">(</span><span class="kwd">final</span><span class="pln"> </span><span class="typ">MessageViewHolder</span><span class="pln"> viewHolder</span><span class="pun">,</span><span class="pln">
+                                            </span><span class="kwd">int</span><span class="pln"> position</span><span class="pun">,</span><span class="pln">
+                                            </span><span class="typ">FriendlyMessage</span><span class="pln"> friendlyMessage</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+       mProgressBar</span><span class="pun">.</span><span class="pln">setVisibility</span><span class="pun">(</span><span class="typ">ProgressBar</span><span class="pun">.</span><span class="pln">INVISIBLE</span><span class="pun">);</span><span class="pln">
+</span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">.</span><span class="pln">getText</span><span class="pun">()</span><span class="pln"> </span><span class="pun">!=</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   viewHolder</span><span class="pun">.</span><span class="pln">messageTextView</span><span class="pun">.</span><span class="pln">setText</span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">.</span><span class="pln">getText</span><span class="pun">());</span><span class="pln">
+   viewHolder</span><span class="pun">.</span><span class="pln">messageTextView</span><span class="pun">.</span><span class="pln">setVisibility</span><span class="pun">(</span><span class="typ">TextView</span><span class="pun">.</span><span class="pln">VISIBLE</span><span class="pun">);</span><span class="pln">
+   viewHolder</span><span class="pun">.</span><span class="pln">messageImageView</span><span class="pun">.</span><span class="pln">setVisibility</span><span class="pun">(</span><span class="typ">ImageView</span><span class="pun">.</span><span class="pln">GONE</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">.</span><span class="pln">getImageUrl</span><span class="pun">()</span><span class="pln"> </span><span class="pun">!=</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   </span><span class="typ">String</span><span class="pln"> imageUrl </span><span class="pun">=</span><span class="pln"> friendlyMessage</span><span class="pun">.</span><span class="pln">getImageUrl</span><span class="pun">();</span><span class="pln">
+   </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">imageUrl</span><span class="pun">.</span><span class="pln">startsWith</span><span class="pun">(</span><span class="str">"gs://"</span><span class="pun">))</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+       </span><span class="typ">StorageReference</span><span class="pln"> storageReference </span><span class="pun">=</span><span class="pln"> </span><span class="typ">FirebaseStorage</span><span class="pun">.</span><span class="pln">getInstance</span><span class="pun">()</span><span class="pln">
+               </span><span class="pun">.</span><span class="pln">getReferenceFromUrl</span><span class="pun">(</span><span class="pln">imageUrl</span><span class="pun">);</span><span class="pln">
+       storageReference</span><span class="pun">.</span><span class="pln">getDownloadUrl</span><span class="pun">().</span><span class="pln">addOnCompleteListener</span><span class="pun">(</span><span class="pln">
+               </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">OnCompleteListener</span><span class="pun">&lt;</span><span class="typ">Uri</span><span class="pun">&gt;()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+           </span><span class="lit">@Override</span><span class="pln">
+           </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onComplete</span><span class="pun">(</span><span class="lit">@NonNull</span><span class="pln"> </span><span class="typ">Task</span><span class="pun">&lt;</span><span class="typ">Uri</span><span class="pun">&gt;</span><span class="pln"> task</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+               </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">task</span><span class="pun">.</span><span class="pln">isSuccessful</span><span class="pun">())</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                   </span><span class="typ">String</span><span class="pln"> downloadUrl </span><span class="pun">=</span><span class="pln"> task</span><span class="pun">.</span><span class="pln">getResult</span><span class="pun">().</span><span class="pln">toString</span><span class="pun">();</span><span class="pln">
+                   </span><span class="typ">Glide</span><span class="pun">.</span><span class="kwd">with</span><span class="pun">(</span><span class="pln">viewHolder</span><span class="pun">.</span><span class="pln">messageImageView</span><span class="pun">.</span><span class="pln">getContext</span><span class="pun">())</span><span class="pln">
+                           </span><span class="pun">.</span><span class="pln">load</span><span class="pun">(</span><span class="pln">downloadUrl</span><span class="pun">)</span><span class="pln">
+                           </span><span class="pun">.</span><span class="kwd">into</span><span class="pun">(</span><span class="pln">viewHolder</span><span class="pun">.</span><span class="pln">messageImageView</span><span class="pun">);</span><span class="pln">
+               </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                   </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">w</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Getting download url was not successful."</span><span class="pun">,</span><span class="pln">
+                           task</span><span class="pun">.</span><span class="pln">getException</span><span class="pun">());</span><span class="pln">
+               </span><span class="pun">}</span><span class="pln">
+           </span><span class="pun">}</span><span class="pln">
+       </span><span class="pun">});</span><span class="pln">
+   </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+       </span><span class="typ">Glide</span><span class="pun">.</span><span class="kwd">with</span><span class="pun">(</span><span class="pln">viewHolder</span><span class="pun">.</span><span class="pln">messageImageView</span><span class="pun">.</span><span class="pln">getContext</span><span class="pun">())</span><span class="pln">
+               </span><span class="pun">.</span><span class="pln">load</span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">.</span><span class="pln">getImageUrl</span><span class="pun">())</span><span class="pln">
+               </span><span class="pun">.</span><span class="kwd">into</span><span class="pun">(</span><span class="pln">viewHolder</span><span class="pun">.</span><span class="pln">messageImageView</span><span class="pun">);</span><span class="pln">
+   </span><span class="pun">}</span><span class="pln">
+   viewHolder</span><span class="pun">.</span><span class="pln">messageImageView</span><span class="pun">.</span><span class="pln">setVisibility</span><span class="pun">(</span><span class="typ">ImageView</span><span class="pun">.</span><span class="pln">VISIBLE</span><span class="pun">);</span><span class="pln">
+   viewHolder</span><span class="pun">.</span><span class="pln">messageTextView</span><span class="pun">.</span><span class="pln">setVisibility</span><span class="pun">(</span><span class="typ">TextView</span><span class="pun">.</span><span class="pln">GONE</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+
+
+viewHolder</span><span class="pun">.</span><span class="pln">messengerTextView</span><span class="pun">.</span><span class="pln">setText</span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">.</span><span class="pln">getName</span><span class="pun">());</span><span class="pln">
+</span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">.</span><span class="pln">getPhotoUrl</span><span class="pun">()</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   viewHolder</span><span class="pun">.</span><span class="pln">messengerImageView</span><span class="pun">.</span><span class="pln">setImageDrawable</span><span class="pun">(</span><span class="typ">ContextCompat</span><span class="pun">.</span><span class="pln">getDrawable</span><span class="pun">(</span><span class="typ">MainActivity</span><span class="pun">.</span><span class="kwd">this</span><span class="pun">,</span><span class="pln">
+           R</span><span class="pun">.</span><span class="pln">drawable</span><span class="pun">.</span><span class="pln">ic_account_circle_black_36dp</span><span class="pun">));</span><span class="pln">
+</span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   </span><span class="typ">Glide</span><span class="pun">.</span><span class="kwd">with</span><span class="pun">(</span><span class="typ">MainActivity</span><span class="pun">.</span><span class="kwd">this</span><span class="pun">)</span><span class="pln">
+           </span><span class="pun">.</span><span class="pln">load</span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">.</span><span class="pln">getPhotoUrl</span><span class="pun">())</span><span class="pln">
+           </span><span class="pun">.</span><span class="kwd">into</span><span class="pun">(</span><span class="pln">viewHolder</span><span class="pun">.</span><span class="pln">messengerImageView</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+
+   </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+mFirebaseAdapter</span><span class="pun">.</span><span class="pln">registerAdapterDataObserver</span><span class="pun">(</span><span class="kwd">new</span><span class="pln"> </span><span class="typ">RecyclerView</span><span class="pun">.</span><span class="typ">AdapterDataObserver</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   </span><span class="lit">@Override</span><span class="pln">
+   </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onItemRangeInserted</span><span class="pun">(</span><span class="kwd">int</span><span class="pln"> positionStart</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">int</span><span class="pln"> itemCount</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+       </span><span class="kwd">super</span><span class="pun">.</span><span class="pln">onItemRangeInserted</span><span class="pun">(</span><span class="pln">positionStart</span><span class="pun">,</span><span class="pln"> itemCount</span><span class="pun">);</span><span class="pln">
+       </span><span class="kwd">int</span><span class="pln"> friendlyMessageCount </span><span class="pun">=</span><span class="pln"> mFirebaseAdapter</span><span class="pun">.</span><span class="pln">getItemCount</span><span class="pun">();</span><span class="pln">
+       </span><span class="kwd">int</span><span class="pln"> lastVisiblePosition </span><span class="pun">=</span><span class="pln">
+              mLinearLayoutManager</span><span class="pun">.</span><span class="pln">findLastCompletelyVisibleItemPosition</span><span class="pun">();</span><span class="pln">
+       </span><span class="com">// If the recycler view is initially being loaded or the </span><span class="pln">
+       </span><span class="com">// user is at the bottom of the list, scroll to the bottom </span><span class="pln">
+       </span><span class="com">// of the list to show the newly added message.</span><span class="pln">
+       </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">lastVisiblePosition </span><span class="pun">==</span><span class="pln"> </span><span class="pun">-</span><span class="lit">1</span><span class="pln"> </span><span class="pun">||</span><span class="pln">
+               </span><span class="pun">(</span><span class="pln">positionStart </span><span class="pun">&gt;=</span><span class="pln"> </span><span class="pun">(</span><span class="pln">friendlyMessageCount </span><span class="pun">-</span><span class="pln"> </span><span class="lit">1</span><span class="pun">)</span><span class="pln"> </span><span class="pun">&amp;&amp;</span><span class="pln">
+                       lastVisiblePosition </span><span class="pun">==</span><span class="pln"> </span><span class="pun">(</span><span class="pln">positionStart </span><span class="pun">-</span><span class="pln"> </span><span class="lit">1</span><span class="pun">)))</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+           mMessageRecyclerView</span><span class="pun">.</span><span class="pln">scrollToPosition</span><span class="pun">(</span><span class="pln">positionStart</span><span class="pun">);</span><span class="pln">
+       </span><span class="pun">}</span><span class="pln">
+   </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">});</span><span class="pln">
+
+mMessageRecyclerView</span><span class="pun">.</span><span class="pln">setAdapter</span><span class="pun">(</span><span class="pln">mFirebaseAdapter</span><span class="pun">);</span></code></pre>
+<p>Appropriately start and stop listening for updates from Firebase Realtime Database. Update the <em><code>onPause</code></em> and <em><code>onResume</code></em> methods in <code>MainActivity</code> as shown below.</p>
+<h3 is-upgraded="">MainActivity.java</h3>
+<pre><code><span class="lit">@Override</span><span class="pln">
+</span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onPause</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    mFirebaseAdapter</span><span class="pun">.</span><span class="pln">stopListening</span><span class="pun">();</span><span class="pln">
+    </span><span class="kwd">super</span><span class="pun">.</span><span class="pln">onPause</span><span class="pun">();</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+
+</span><span class="lit">@Override</span><span class="pln">
+</span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onResume</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">super</span><span class="pun">.</span><span class="pln">onResume</span><span class="pun">();</span><span class="pln">
+    mFirebaseAdapter</span><span class="pun">.</span><span class="pln">startListening</span><span class="pun">();</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+<h3 is-upgraded="">Test message sync</h3>
+<ol type="1" start="1">
+<li>Click <strong>Run </strong>(<img alt="execute.png" style="width: 20.00px" src="friendlychat_android_files/74540ff4e857014c.png">).</li>
+<li>Add new messages directly in the Database section of the Firebase console. Confirm that they show up in the Friendly-Chat UI.</li>
+</ol>
+<ul>
+<li>Navigate to the Database section of the Firebase console. From the Data tab, select the '+' sign on the messages element.</li>
+<li>Give the new element a name of -ABCD (note the '-' sign) and leave the value empty for now.</li>
+<li>Select the '+' sign on the -ABCD element</li>
+<li>Give the new element a name of "name" and value of "Mary"</li>
+<li>Select the '+' sign on the -ABCD element again</li>
+<li>Give the new element a name of "text" and value of "hello"</li>
+<li>Select Add</li>
+</ul>
+<p>Congratulations, you just added a realtime database to your app!</p>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Send Messages" duration="0" step="9"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">9. Send Messages</h2>
+        <h3 is-upgraded=""><strong>Implement text message sending</strong></h3>
+<p>In this section, you will add the ability for app users to send text 
+messages.  The code snippet below listens for click events on the send 
+button, creates a new <code>FriendlyMessage</code> object with the contents of the message field, and pushes the message to the database.  The <code>push()</code>
+ method adds an automatically generated ID to the pushed object's path. 
+ These IDs are sequential which ensures that the new messages will be 
+added to the end of the list.  </p>
+<p>Update the <code>onClick</code> method of <code>mSendButton</code> in the <code>onCreate</code> method in the <code>MainActivity</code> class.  This code is at the bottom of the <code>onCreate</code> method already. Update the <code>onClick</code> body to match the code below:</p>
+<h3 is-upgraded="">MainActivity.java</h3>
+<pre><code><span class="pln">mSendButton </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="typ">Button</span><span class="pun">)</span><span class="pln"> findViewById</span><span class="pun">(</span><span class="pln">R</span><span class="pun">.</span><span class="pln">id</span><span class="pun">.</span><span class="pln">sendButton</span><span class="pun">);</span><span class="pln">
+mSendButton</span><span class="pun">.</span><span class="pln">setOnClickListener</span><span class="pun">(</span><span class="kwd">new</span><span class="pln"> </span><span class="typ">View</span><span class="pun">.</span><span class="typ">OnClickListener</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   </span><span class="lit">@Override</span><span class="pln">
+   </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onClick</span><span class="pun">(</span><span class="typ">View</span><span class="pln"> view</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+       </span><span class="typ">FriendlyMessage</span><span class="pln"> friendlyMessage </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> 
+               </span><span class="typ">FriendlyMessage</span><span class="pun">(</span><span class="pln">mMessageEditText</span><span class="pun">.</span><span class="pln">getText</span><span class="pun">().</span><span class="pln">toString</span><span class="pun">(),</span><span class="pln">
+                               mUsername</span><span class="pun">,</span><span class="pln">
+                               mPhotoUrl</span><span class="pun">,</span><span class="pln">
+                               </span><span class="kwd">null</span><span class="pln"> </span><span class="com">/* no image */</span><span class="pun">);</span><span class="pln">
+       mFirebaseDatabaseReference</span><span class="pun">.</span><span class="pln">child</span><span class="pun">(</span><span class="pln">MESSAGES_CHILD</span><span class="pun">)</span><span class="pln">
+               </span><span class="pun">.</span><span class="pln">push</span><span class="pun">().</span><span class="pln">setValue</span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">);</span><span class="pln">
+       mMessageEditText</span><span class="pun">.</span><span class="pln">setText</span><span class="pun">(</span><span class="str">""</span><span class="pun">);</span><span class="pln">
+   </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">});</span></code></pre>
+<h3 is-upgraded=""><strong>Implement image message sending</strong></h3>
+<p>In this section, you will add the ability for app users to send image
+ messages. Creating an image message is done with these steps:</p>
+<ul>
+<li>Select image</li>
+<li>Handle image selection</li>
+<li>Write temporary image message to the RTDB (Realtime Database)</li>
+<li>Begin to upload selected image</li>
+<li>Update image message URL to that of the uploaded image, once upload is complete</li>
+</ul>
+<h3 is-upgraded=""><strong>Select Image</strong></h3>
+<p>To add images this codelab uses Cloud Storage for Firebase. Cloud Storage is a good place to store the binary data of your app.</p>
+<p>In the Firebase console select <strong>Storage</strong> in the left navigation panel. Then click <strong>Get Started</strong> to enable Cloud Storage for your project.  Continue following the steps in the prompt, using the suggested defaults.</p>
+<p>With the following code snippet you will allow the user to select an image from the device's local storage. Update the <code>onClick</code> method of <code>mAddMessageImageView</code> in the <code>onCreate</code> method in the <code>MainActivity</code> class. This code is at the bottom of the <code>onCreate</code> method already. Update the <code>onClick</code> body to match the code below:</p>
+<h3 is-upgraded="">MainActivity.java</h3>
+<pre><code><span class="pln">mAddMessageImageView </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="typ">ImageView</span><span class="pun">)</span><span class="pln"> findViewById</span><span class="pun">(</span><span class="pln">R</span><span class="pun">.</span><span class="pln">id</span><span class="pun">.</span><span class="pln">addMessageImageView</span><span class="pun">);</span><span class="pln">
+mAddMessageImageView</span><span class="pun">.</span><span class="pln">setOnClickListener</span><span class="pun">(</span><span class="kwd">new</span><span class="pln"> </span><span class="typ">View</span><span class="pun">.</span><span class="typ">OnClickListener</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   </span><span class="lit">@Override</span><span class="pln">
+   </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onClick</span><span class="pun">(</span><span class="typ">View</span><span class="pln"> view</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+       </span><span class="typ">Intent</span><span class="pln"> intent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">Intent</span><span class="pun">(</span><span class="typ">Intent</span><span class="pun">.</span><span class="pln">ACTION_OPEN_DOCUMENT</span><span class="pun">);</span><span class="pln">
+       intent</span><span class="pun">.</span><span class="pln">addCategory</span><span class="pun">(</span><span class="typ">Intent</span><span class="pun">.</span><span class="pln">CATEGORY_OPENABLE</span><span class="pun">);</span><span class="pln">
+       intent</span><span class="pun">.</span><span class="pln">setType</span><span class="pun">(</span><span class="str">"image/*"</span><span class="pun">);</span><span class="pln">
+       startActivityForResult</span><span class="pun">(</span><span class="pln">intent</span><span class="pun">,</span><span class="pln"> REQUEST_IMAGE</span><span class="pun">);</span><span class="pln">
+   </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">});</span></code></pre>
+<h4 is-upgraded=""><strong>Handle image selection and write temp message</strong></h4>
+<p>Once the user has selected an image, a call to the <code>MainActivity</code>'s <code>onActivityResult</code> will be fired. This is where you handle the user's image selection. Using the code snippet below, add the <code>onActivityResult</code> method to <code>MainActivity</code>. In this function you will write a message with a temporary image url to the database indicating the image is being uploaded.</p>
+<h3 is-upgraded="">MainActivity.java</h3>
+<pre><code><span class="lit">@Override</span><span class="pln">
+</span><span class="kwd">protected</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onActivityResult</span><span class="pun">(</span><span class="kwd">int</span><span class="pln"> requestCode</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">int</span><span class="pln"> resultCode</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Intent</span><span class="pln"> data</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   </span><span class="kwd">super</span><span class="pun">.</span><span class="pln">onActivityResult</span><span class="pun">(</span><span class="pln">requestCode</span><span class="pun">,</span><span class="pln"> resultCode</span><span class="pun">,</span><span class="pln"> data</span><span class="pun">);</span><span class="pln">
+   </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">d</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"onActivityResult: requestCode="</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> requestCode </span><span class="pun">+</span><span class="pln"> </span><span class="str">", resultCode="</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> resultCode</span><span class="pun">);</span><span class="pln">
+
+   </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">requestCode </span><span class="pun">==</span><span class="pln"> REQUEST_IMAGE</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+       </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">resultCode </span><span class="pun">==</span><span class="pln"> RESULT_OK</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+           </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">data </span><span class="pun">!=</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+               </span><span class="kwd">final</span><span class="pln"> </span><span class="typ">Uri</span><span class="pln"> uri </span><span class="pun">=</span><span class="pln"> data</span><span class="pun">.</span><span class="pln">getData</span><span class="pun">();</span><span class="pln">
+               </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">d</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Uri: "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> uri</span><span class="pun">.</span><span class="pln">toString</span><span class="pun">());</span><span class="pln">
+
+               </span><span class="typ">FriendlyMessage</span><span class="pln"> tempMessage </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">FriendlyMessage</span><span class="pun">(</span><span class="kwd">null</span><span class="pun">,</span><span class="pln"> mUsername</span><span class="pun">,</span><span class="pln"> mPhotoUrl</span><span class="pun">,</span><span class="pln">
+                       LOADING_IMAGE_URL</span><span class="pun">);</span><span class="pln">
+               mFirebaseDatabaseReference</span><span class="pun">.</span><span class="pln">child</span><span class="pun">(</span><span class="pln">MESSAGES_CHILD</span><span class="pun">).</span><span class="pln">push</span><span class="pun">()</span><span class="pln">
+                       </span><span class="pun">.</span><span class="pln">setValue</span><span class="pun">(</span><span class="pln">tempMessage</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">DatabaseReference</span><span class="pun">.</span><span class="typ">CompletionListener</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                           </span><span class="lit">@Override</span><span class="pln">
+                           </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onComplete</span><span class="pun">(</span><span class="typ">DatabaseError</span><span class="pln"> databaseError</span><span class="pun">,</span><span class="pln">
+                                                  </span><span class="typ">DatabaseReference</span><span class="pln"> databaseReference</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                               </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">databaseError </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                                   </span><span class="typ">String</span><span class="pln"> key </span><span class="pun">=</span><span class="pln"> databaseReference</span><span class="pun">.</span><span class="pln">getKey</span><span class="pun">();</span><span class="pln">
+                                   </span><span class="typ">StorageReference</span><span class="pln"> storageReference </span><span class="pun">=</span><span class="pln">
+                                           </span><span class="typ">FirebaseStorage</span><span class="pun">.</span><span class="pln">getInstance</span><span class="pun">()</span><span class="pln">
+                                           </span><span class="pun">.</span><span class="pln">getReference</span><span class="pun">(</span><span class="pln">mFirebaseUser</span><span class="pun">.</span><span class="pln">getUid</span><span class="pun">())</span><span class="pln">
+                                           </span><span class="pun">.</span><span class="pln">child</span><span class="pun">(</span><span class="pln">key</span><span class="pun">)</span><span class="pln">
+                                           </span><span class="pun">.</span><span class="pln">child</span><span class="pun">(</span><span class="pln">uri</span><span class="pun">.</span><span class="pln">getLastPathSegment</span><span class="pun">());</span><span class="pln">
+
+                                   putImageInStorage</span><span class="pun">(</span><span class="pln">storageReference</span><span class="pun">,</span><span class="pln"> uri</span><span class="pun">,</span><span class="pln"> key</span><span class="pun">);</span><span class="pln">
+                               </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                                   </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">w</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Unable to write message to database."</span><span class="pun">,</span><span class="pln">
+                                           databaseError</span><span class="pun">.</span><span class="pln">toException</span><span class="pun">());</span><span class="pln">
+                               </span><span class="pun">}</span><span class="pln">
+                           </span><span class="pun">}</span><span class="pln">
+                       </span><span class="pun">});</span><span class="pln">
+           </span><span class="pun">}</span><span class="pln">
+       </span><span class="pun">}</span><span class="pln">
+   </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+<h4 is-upgraded=""><strong>Upload image and update message</strong></h4>
+<p>Add the method <code>putImageInStorage</code> to <code>MainActivity</code>. It is called in <code>onActivityResult</code>
+ to initiate the upload of the selected image. Once the upload is 
+complete you will update the message to use the appropriate image. </p>
+<h3 is-upgraded="">MainActivity.java</h3>
+<pre><code><span class="kwd">private</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> putImageInStorage</span><span class="pun">(</span><span class="typ">StorageReference</span><span class="pln"> storageReference</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Uri</span><span class="pln"> uri</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">final</span><span class="pln"> </span><span class="typ">String</span><span class="pln"> key</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        storageReference</span><span class="pun">.</span><span class="pln">putFile</span><span class="pun">(</span><span class="pln">uri</span><span class="pun">).</span><span class="pln">addOnCompleteListener</span><span class="pun">(</span><span class="typ">MainActivity</span><span class="pun">.</span><span class="kwd">this</span><span class="pun">,</span><span class="pln">
+                </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">OnCompleteListener</span><span class="pun">&lt;</span><span class="typ">UploadTask</span><span class="pun">.</span><span class="typ">TaskSnapshot</span><span class="pun">&gt;()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                    </span><span class="lit">@Override</span><span class="pln">
+                    </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onComplete</span><span class="pun">(</span><span class="lit">@NonNull</span><span class="pln"> </span><span class="typ">Task</span><span class="pun">&lt;</span><span class="typ">UploadTask</span><span class="pun">.</span><span class="typ">TaskSnapshot</span><span class="pun">&gt;</span><span class="pln"> task</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                        </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">task</span><span class="pun">.</span><span class="pln">isSuccessful</span><span class="pun">())</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                            task</span><span class="pun">.</span><span class="pln">getResult</span><span class="pun">().</span><span class="pln">getMetadata</span><span class="pun">().</span><span class="pln">getReference</span><span class="pun">().</span><span class="pln">getDownloadUrl</span><span class="pun">()</span><span class="pln">
+                                    </span><span class="pun">.</span><span class="pln">addOnCompleteListener</span><span class="pun">(</span><span class="typ">MainActivity</span><span class="pun">.</span><span class="kwd">this</span><span class="pun">,</span><span class="pln"> 
+                                            </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">OnCompleteListener</span><span class="pun">&lt;</span><span class="typ">Uri</span><span class="pun">&gt;()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                                </span><span class="lit">@Override</span><span class="pln">
+                                </span><span class="kwd">public</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> onComplete</span><span class="pun">(</span><span class="lit">@NonNull</span><span class="pln"> </span><span class="typ">Task</span><span class="pun">&lt;</span><span class="typ">Uri</span><span class="pun">&gt;</span><span class="pln"> task</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                                    </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">task</span><span class="pun">.</span><span class="pln">isSuccessful</span><span class="pun">())</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                                        </span><span class="typ">FriendlyMessage</span><span class="pln"> friendlyMessage </span><span class="pun">=</span><span class="pln">
+                                                </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">FriendlyMessage</span><span class="pun">(</span><span class="kwd">null</span><span class="pun">,</span><span class="pln"> mUsername</span><span class="pun">,</span><span class="pln"> mPhotoUrl</span><span class="pun">,</span><span class="pln">
+                                                        task</span><span class="pun">.</span><span class="pln">getResult</span><span class="pun">().</span><span class="pln">toString</span><span class="pun">());</span><span class="pln">
+                                        mFirebaseDatabaseReference</span><span class="pun">.</span><span class="pln">child</span><span class="pun">(</span><span class="pln">MESSAGES_CHILD</span><span class="pun">).</span><span class="pln">child</span><span class="pun">(</span><span class="pln">key</span><span class="pun">)</span><span class="pln">
+                                                </span><span class="pun">.</span><span class="pln">setValue</span><span class="pun">(</span><span class="pln">friendlyMessage</span><span class="pun">);</span><span class="pln">
+                                    </span><span class="pun">}</span><span class="pln">
+                                </span><span class="pun">}</span><span class="pln">
+                            </span><span class="pun">});</span><span class="pln">
+                        </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+                            </span><span class="typ">Log</span><span class="pun">.</span><span class="pln">w</span><span class="pun">(</span><span class="pln">TAG</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Image upload task was not successful."</span><span class="pun">,</span><span class="pln">
+                                    task</span><span class="pun">.</span><span class="pln">getException</span><span class="pun">());</span><span class="pln">
+                        </span><span class="pun">}</span><span class="pln">
+                    </span><span class="pun">}</span><span class="pln">
+                </span><span class="pun">});</span><span class="pln">
+    </span><span class="pun">}</span></code></pre>
+<h3 is-upgraded=""><strong>Test Sending Messages</strong></h3>
+<ol type="1" start="1">
+<li>Click the <img alt="execute.png" style="width: 20.00px" src="friendlychat_android_files/74540ff4e857014c.png"><strong>Run</strong> button.</li>
+<li>Enter a message and hit the send button, the new message should be visible in the app UI and in the Firebase console.</li>
+<li>Tap the "+" image to select an image from your device. The new 
+message should be visible first with a placeholder image, and then with 
+the selected image once the image upload is complete. The new message 
+should also be visible in the Firebase console, as an object in the 
+Database and as a blob in Storage.</li>
+</ol>
+
+
+      </div></div></google-codelab-step><google-codelab-step label="Congratulations!" duration="0" step="10"><div class="instructions"><div class="inner"><h2 is-upgraded="" class="step-title">10. Congratulations!</h2>
+        <p>You have used Firebase to easily build a real-time chat application.</p>
+<h3 class="checklist" is-upgraded=""><strong>What we've covered</strong></h3>
+<ul class="checklist">
+<li>Firebase Authentication</li>
+<li>Firebase Realtime Database</li>
+<li>Cloud Storage for Firebase</li>
+</ul>
+<h3 is-upgraded="">Next Steps</h3>
+<ul>
+<li>Try the <a href="https://codelabs.developers.google.com/codelabs/growfirebase-android/index.html?index=..%2F..index" target="_blank">Grow Friendly Chat</a> codelab, to learn how to grow the app you just built.</li>
+<li>Use Firebase in your own Android app.</li>
+</ul>
+<h3 is-upgraded=""><strong>Learn More</strong></h3>
+<ul>
+<li><a href="https://firebase.google.com/" target="_blank">firebase.google.com</a></li>
+</ul>
+
+
+      </div></div></google-codelab-step></div><div id="controls"><div id="fabs"><a href="#" id="previous-step" title="Previous step">Back</a><div class="spacer"></div><a href="#" id="next-step" title="Next step">Next</a><a href="https://codelabs.developers.google.com/" id="done" title="Codelab complete" hidden="">Done</a></div></div></div></google-codelab>
+
+  <script src="friendlychat_android_files/native-shim.js"></script>
+  <script src="friendlychat_android_files/custom-elements.js"></script>
+  <script src="friendlychat_android_files/prettify.js"></script>
+  <script src="friendlychat_android_files/codelab-elements.js"></script>
+
+
+
+</body></html>
