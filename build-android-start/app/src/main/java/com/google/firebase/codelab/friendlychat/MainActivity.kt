@@ -129,8 +129,16 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.sign_out_menu -> {
+            firebaseAuth.signOut()
+            Auth.GoogleSignInApi.signOut(googleApiClient)
+            username = ANONYMOUS
+            startActivity(Intent(this, SignInActivity::class.java))
+            finish()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
