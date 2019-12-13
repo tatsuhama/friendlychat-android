@@ -76,7 +76,8 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private val addMessageImageView: ImageView by lazy { findViewById<View>(R.id.addMessageImageView) as ImageView }
     // Firebase instance variables
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private var mFirebaseUser: FirebaseUser? = null
+
+    private fun getFirebaseUser(): FirebaseUser? = firebaseAuth.currentUser
     private var mFirebaseDatabaseReference: DatabaseReference? = null
     private val firebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> by lazy { createAdapter() }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,15 +86,15 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         // Set default username is anonymous.
         mUsername = ANONYMOUS
         // Initialize Firebase Auth
-        mFirebaseUser = firebaseAuth.getCurrentUser()
-        if (mFirebaseUser == null) { // Not signed in, launch the Sign In activity
+        val firebaseUser = getFirebaseUser()
+        if (firebaseUser == null) { // Not signed in, launch the Sign In activity
             startActivity(Intent(this, SignInActivity::class.java))
             finish()
             return
         } else {
-            mUsername = mFirebaseUser!!.displayName
-            if (mFirebaseUser!!.photoUrl != null) {
-                mPhotoUrl = mFirebaseUser!!.photoUrl.toString()
+            mUsername = firebaseUser.displayName
+            if (firebaseUser.photoUrl != null) {
+                mPhotoUrl = firebaseUser.photoUrl.toString()
             }
         }
         // Initialize ProgressBar and RecyclerView.
@@ -270,7 +271,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                                 if (databaseError == null) {
                                     val key = databaseReference.key
                                     val storageReference = FirebaseStorage.getInstance()
-                                            .getReference(mFirebaseUser!!.uid)
+                                            .getReference(getFirebaseUser()!!.uid)
                                             .child(key!!)
                                             .child(uri.lastPathSegment)
                                     putImageInStorage(storageReference, uri, key)
