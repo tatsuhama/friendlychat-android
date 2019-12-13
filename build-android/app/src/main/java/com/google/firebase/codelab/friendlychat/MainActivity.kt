@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
 
     private var mUsername: String? = null
     private var mPhotoUrl: String? = null
-    private var mSharedPreferences: SharedPreferences? = null
+    private val sharedPreferences: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private val googleApiClient: GoogleApiClient by lazy {
         GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
@@ -82,7 +82,6 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         // Set default username is anonymous.
         mUsername = ANONYMOUS
         // Initialize Firebase Auth
