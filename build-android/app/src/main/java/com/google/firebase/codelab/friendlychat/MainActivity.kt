@@ -51,18 +51,12 @@ import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
-    class MessageViewHolder(v: View?) : RecyclerView.ViewHolder(v!!) {
-        var messageTextView: TextView
-        var messageImageView: ImageView
-        var messengerTextView: TextView
-        var messengerImageView: CircleImageView
 
-        init {
-            messageTextView = itemView.findViewById<View>(R.id.messageTextView) as TextView
-            messageImageView = itemView.findViewById<View>(R.id.messageImageView) as ImageView
-            messengerTextView = itemView.findViewById<View>(R.id.messengerTextView) as TextView
-            messengerImageView = itemView.findViewById<View>(R.id.messengerImageView) as CircleImageView
-        }
+    class MessageViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        val messageTextView: TextView = itemView.findViewById<View>(R.id.messageTextView) as TextView
+        val messageImageView: ImageView = itemView.findViewById<View>(R.id.messageImageView) as ImageView
+        val messengerTextView: TextView = itemView.findViewById<View>(R.id.messengerTextView) as TextView
+        val messengerImageView: CircleImageView = itemView.findViewById<View>(R.id.messengerImageView) as CircleImageView
     }
 
     private var mUsername: String? = null
