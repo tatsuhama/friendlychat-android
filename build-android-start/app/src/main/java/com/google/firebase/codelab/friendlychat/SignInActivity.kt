@@ -15,18 +15,21 @@
  */
 package com.google.firebase.codelab.friendlychat
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnClickListener {
     private val signInButton: SignInButton by lazy { findViewById<View>(R.id.sign_in_button) as SignInButton }
@@ -65,6 +68,39 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
     private fun signIn() {
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
         startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+            if (result.isSuccess) { // Google Sign-In was successful, authenticate with Firebase
+                val account = result.signInAccount!!
+                firebaseAuthWithGoogle(account)
+            } else { // Google Sign-In failed
+                Log.e(TAG, "Google Sign-In failed.")
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
+        Log.d(TAG, "firebaseAuthWithGooogle:" + acct.id)
+        val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this) { task ->
+                    Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful)
+                    // If sign in fails, display a message to the user. If sign in succeeds
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
+                    if (!task.isSuccessful) {
+                        Log.w(TAG, "signInWithCredential", task.exception)
+                        Toast.makeText(this@SignInActivity, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+                        finish()
+                    }
+                }
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
