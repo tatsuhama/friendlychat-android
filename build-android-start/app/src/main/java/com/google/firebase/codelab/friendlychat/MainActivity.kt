@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     }
 
     private var username: String = ANONYMOUS // Set default username is anonymous.
-    private val photoUrl: String? = null
+    private var photoUrl: String? = null
     private val sharedPreferences: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private val googleApiClient: GoogleApiClient by lazy {
         GoogleApiClient.Builder(this)
