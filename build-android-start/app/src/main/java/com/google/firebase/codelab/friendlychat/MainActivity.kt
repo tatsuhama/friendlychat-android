@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         val messengerImageView: CircleImageView = itemView.findViewById<View>(R.id.messengerImageView) as CircleImageView
     }
 
-    private var mUsername: String? = null
+    private var username: String = ANONYMOUS // Set default username is anonymous.
     private val mPhotoUrl: String? = null
     private var mSharedPreferences: SharedPreferences? = null
     private var mGoogleApiClient: GoogleApiClient? = null
@@ -61,8 +61,6 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        // Set default username is anonymous.
-        mUsername = ANONYMOUS
         mGoogleApiClient = GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
