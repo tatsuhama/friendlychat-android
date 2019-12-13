@@ -68,12 +68,12 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build()
     }
-    private var mSendButton: Button? = null
-    private var mMessageRecyclerView: RecyclerView? = null
-    private var mLinearLayoutManager: LinearLayoutManager? = null
-    private var mProgressBar: ProgressBar? = null
-    private var mMessageEditText: EditText? = null
-    private var mAddMessageImageView: ImageView? = null
+    private val sendButton: Button by lazy { findViewById<View>(R.id.sendButton) as Button }
+    private val messageRecyclerView: RecyclerView by lazy { findViewById<View>(R.id.messageRecyclerView) as RecyclerView }
+    private val linearLayoutManager: LinearLayoutManager by lazy { LinearLayoutManager(this) }
+    private val progressBar: ProgressBar by lazy { findViewById<View>(R.id.progressBar) as ProgressBar }
+    private val messageEditText: EditText by lazy { findViewById<View>(R.id.messageEditText) as EditText }
+    private val addMessageImageView: ImageView by lazy { findViewById<View>(R.id.addMessageImageView) as ImageView }
     // Firebase instance variables
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private var mFirebaseUser: FirebaseUser? = null
@@ -97,54 +97,48 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
             }
         }
         // Initialize ProgressBar and RecyclerView.
-        mProgressBar = findViewById<View>(R.id.progressBar) as ProgressBar
-        mMessageRecyclerView = findViewById<View>(R.id.messageRecyclerView) as RecyclerView
-        mLinearLayoutManager = LinearLayoutManager(this)
-        mLinearLayoutManager!!.stackFromEnd = true
-        mMessageRecyclerView!!.layoutManager = mLinearLayoutManager
+        linearLayoutManager.stackFromEnd = true
+        messageRecyclerView.layoutManager = linearLayoutManager
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().reference
 
         firebaseAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
                 val friendlyMessageCount = firebaseAdapter.getItemCount()
-                val lastVisiblePosition = mLinearLayoutManager!!.findLastCompletelyVisibleItemPosition()
+                val lastVisiblePosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 // If the recycler view is initially being loaded or the
 // user is at the bottom of the list, scroll to the bottom
 // of the list to show the newly added message.
                 if (lastVisiblePosition == -1 ||
                         positionStart >= friendlyMessageCount - 1 &&
                         lastVisiblePosition == positionStart - 1) {
-                    mMessageRecyclerView!!.scrollToPosition(positionStart)
+                    messageRecyclerView.scrollToPosition(positionStart)
                 }
             }
         })
-        mMessageRecyclerView!!.adapter = firebaseAdapter
-        mMessageEditText = findViewById<View>(R.id.messageEditText) as EditText
-        mMessageEditText!!.addTextChangedListener(object : TextWatcher {
+        messageRecyclerView.adapter = firebaseAdapter
+        messageEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 if (charSequence.toString().trim { it <= ' ' }.length > 0) {
-                    mSendButton!!.isEnabled = true
+                    sendButton.isEnabled = true
                 } else {
-                    mSendButton!!.isEnabled = false
+                    sendButton.isEnabled = false
                 }
             }
 
             override fun afterTextChanged(editable: Editable) {}
         })
-        mSendButton = findViewById<View>(R.id.sendButton) as Button
-        mSendButton!!.setOnClickListener {
-            val friendlyMessage = FriendlyMessage(mMessageEditText!!.text.toString(),
+        sendButton.setOnClickListener {
+            val friendlyMessage = FriendlyMessage(messageEditText.text.toString(),
                     mUsername,
                     mPhotoUrl,
                     null /* no image */)
             mFirebaseDatabaseReference!!.child(MESSAGES_CHILD)
                     .push().setValue(friendlyMessage)
-            mMessageEditText!!.setText("")
+            messageEditText.setText("")
         }
-        mAddMessageImageView = findViewById<View>(R.id.addMessageImageView) as ImageView
-        mAddMessageImageView!!.setOnClickListener {
+        addMessageImageView.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "image/*"
@@ -173,7 +167,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
             override fun onBindViewHolder(viewHolder: MessageViewHolder,
                                           position: Int,
                                           friendlyMessage: FriendlyMessage) {
-                mProgressBar!!.visibility = ProgressBar.INVISIBLE
+                progressBar.visibility = ProgressBar.INVISIBLE
                 if (friendlyMessage.text != null) {
                     viewHolder.messageTextView.text = friendlyMessage.text
                     viewHolder.messageTextView.visibility = TextView.VISIBLE
@@ -244,7 +238,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
-                firebaseAuth!!.signOut()
+                firebaseAuth.signOut()
                 Auth.GoogleSignInApi.signOut(googleApiClient)
                 mUsername = ANONYMOUS
                 startActivity(Intent(this, SignInActivity::class.java))
