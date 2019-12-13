@@ -28,16 +28,14 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
 
 class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnClickListener {
-    private var mSignInButton: SignInButton? = null
+    private val signInButton: SignInButton by lazy { findViewById<View>(R.id.sign_in_button) as SignInButton }
     private var mGoogleApiClient: GoogleApiClient? = null
     // Firebase instance variables
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
-        // Assign fields
-        mSignInButton = findViewById<View>(R.id.sign_in_button) as SignInButton
         // Set click listeners
-        mSignInButton!!.setOnClickListener(this)
+        signInButton.setOnClickListener(this)
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
