@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     }
 
     private var username: String = ANONYMOUS // Set default username is anonymous.
-    private var mPhotoUrl: String? = null
+    private var photoUrl: String? = null
     private val sharedPreferences: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private val googleApiClient: GoogleApiClient by lazy {
         GoogleApiClient.Builder(this)
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         } else {
             username = firebaseUser.displayName.orEmpty()
             if (firebaseUser.photoUrl != null) {
-                mPhotoUrl = firebaseUser.photoUrl.toString()
+                photoUrl = firebaseUser.photoUrl.toString()
             }
         }
         // Initialize ProgressBar and RecyclerView.
@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         sendButton.setOnClickListener {
             val friendlyMessage = FriendlyMessage(messageEditText.text.toString(),
                     username,
-                    mPhotoUrl,
+                    photoUrl,
                     null /* no image */)
             firebaseDatabaseReference.child(MESSAGES_CHILD)
                     .push().setValue(friendlyMessage)
@@ -261,7 +261,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 if (data != null) {
                     val uri = data.data
                     Log.d(TAG, "Uri: $uri")
-                    val tempMessage = FriendlyMessage(null, username, mPhotoUrl, LOADING_IMAGE_URL)
+                    val tempMessage = FriendlyMessage(null, username, photoUrl, LOADING_IMAGE_URL)
                     firebaseDatabaseReference.child(MESSAGES_CHILD).push()
                             .setValue(tempMessage) { databaseError, databaseReference ->
                                 if (databaseError == null) {
@@ -286,7 +286,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 task.result!!.metadata!!.reference!!.downloadUrl
                         .addOnCompleteListener(this@MainActivity) { task ->
                             if (task.isSuccessful) {
-                                val friendlyMessage = FriendlyMessage(null, username, mPhotoUrl, task.result.toString())
+                                val friendlyMessage = FriendlyMessage(null, username, photoUrl, task.result.toString())
                                 firebaseDatabaseReference
                                         .child(MESSAGES_CHILD)
                                         .child(key!!)
