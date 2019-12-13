@@ -26,6 +26,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
+import com.google.firebase.auth.FirebaseAuth
 
 class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnClickListener {
     private val signInButton: SignInButton by lazy { findViewById<View>(R.id.sign_in_button) as SignInButton }
@@ -42,6 +43,7 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
     }
 
     // Firebase instance variables
+    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,8 +57,14 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
     override fun onClick(v: View) {
         when (v.id) {
             R.id.sign_in_button -> {
+                signIn()
             }
         }
+    }
+
+    private fun signIn() {
+        val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
+        startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
