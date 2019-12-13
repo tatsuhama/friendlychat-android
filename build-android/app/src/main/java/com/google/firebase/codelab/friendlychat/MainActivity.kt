@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         val messengerImageView: CircleImageView = itemView.findViewById<View>(R.id.messengerImageView) as CircleImageView
     }
 
-    private var mUsername: String? = null
+    private var username: String = ANONYMOUS // Set default username is anonymous.
     private var mPhotoUrl: String? = null
     private val sharedPreferences: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private val googleApiClient: GoogleApiClient by lazy {
@@ -84,8 +84,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        // Set default username is anonymous.
-        mUsername = ANONYMOUS
+
         // Initialize Firebase Auth
         val firebaseUser = getFirebaseUser()
         if (firebaseUser == null) { // Not signed in, launch the Sign In activity
@@ -93,7 +92,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
             finish()
             return
         } else {
-            mUsername = firebaseUser.displayName
+            username = firebaseUser.displayName.orEmpty()
             if (firebaseUser.photoUrl != null) {
                 mPhotoUrl = firebaseUser.photoUrl.toString()
             }
@@ -131,7 +130,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         })
         sendButton.setOnClickListener {
             val friendlyMessage = FriendlyMessage(messageEditText.text.toString(),
-                    mUsername,
+                    username,
                     mPhotoUrl,
                     null /* no image */)
             firebaseDatabaseReference.child(MESSAGES_CHILD)
@@ -239,7 +238,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
             R.id.sign_out_menu -> {
                 firebaseAuth.signOut()
                 Auth.GoogleSignInApi.signOut(googleApiClient)
-                mUsername = ANONYMOUS
+                username = ANONYMOUS
                 startActivity(Intent(this, SignInActivity::class.java))
                 finish()
                 true
@@ -262,7 +261,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 if (data != null) {
                     val uri = data.data
                     Log.d(TAG, "Uri: $uri")
-                    val tempMessage = FriendlyMessage(null, mUsername, mPhotoUrl, LOADING_IMAGE_URL)
+                    val tempMessage = FriendlyMessage(null, username, mPhotoUrl, LOADING_IMAGE_URL)
                     firebaseDatabaseReference.child(MESSAGES_CHILD).push()
                             .setValue(tempMessage) { databaseError, databaseReference ->
                                 if (databaseError == null) {
@@ -287,7 +286,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 task.result!!.metadata!!.reference!!.downloadUrl
                         .addOnCompleteListener(this@MainActivity) { task ->
                             if (task.isSuccessful) {
-                                val friendlyMessage = FriendlyMessage(null, mUsername, mPhotoUrl, task.result.toString())
+                                val friendlyMessage = FriendlyMessage(null, username, mPhotoUrl, task.result.toString())
                                 firebaseDatabaseReference
                                         .child(MESSAGES_CHILD)
                                         .child(key!!)
