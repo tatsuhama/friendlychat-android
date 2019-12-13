@@ -72,11 +72,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         messageEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                if (charSequence.toString().trim { it <= ' ' }.length > 0) {
-                    sendButton.isEnabled = true
-                } else {
-                    sendButton.isEnabled = false
-                }
+                sendButton.isEnabled = charSequence.toString().trim { it <= ' ' }.isNotEmpty()
             }
 
             override fun afterTextChanged(editable: Editable) {}
@@ -92,7 +88,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     public override fun onStart() {
         super.onStart()
         // Check if user is signed in.
-// TODO: Add code to check if user is signed in.
+        // TODO: Add code to check if user is signed in.
     }
 
     public override fun onPause() {
@@ -117,8 +113,8 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-// be available.
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
         Log.d(TAG, "onConnectionFailed:$connectionResult")
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show()
     }
