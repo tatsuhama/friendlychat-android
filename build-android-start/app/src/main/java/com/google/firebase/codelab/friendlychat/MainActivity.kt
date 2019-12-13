@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
 
     private var username: String = ANONYMOUS // Set default username is anonymous.
     private val mPhotoUrl: String? = null
-    private var mSharedPreferences: SharedPreferences? = null
+    private val sharedPreferences: SharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private val googleApiClient: GoogleApiClient by lazy {
         GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         // Initialize ProgressBar and RecyclerView.
         mProgressBar = findViewById<View>(R.id.progressBar) as ProgressBar
         mMessageRecyclerView = findViewById<View>(R.id.messageRecyclerView) as RecyclerView
