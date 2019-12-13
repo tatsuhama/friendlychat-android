@@ -15,18 +15,25 @@
  */
 package com.google.firebase.codelab.friendlychat;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 public class FriendlyMessage {
 
     private String id;
+    @Nullable
     private String text;
-    private String name;
+    @NonNull
+    private String name = "";
+    @Nullable
     private String photoUrl;
+    @Nullable
     private String imageUrl;
 
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl, String imageUrl) {
+    public FriendlyMessage(@Nullable String text, @NonNull String name, @Nullable String photoUrl, @Nullable String imageUrl) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
@@ -41,35 +48,39 @@ public class FriendlyMessage {
         this.id = id;
     }
 
-    public void setText(String text) {
+    public void setText(@Nullable String text) {
         this.text = text;
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
+    @Nullable
     public String getPhotoUrl() {
         return photoUrl;
     }
 
+    @Nullable
     public String getText() {
         return text;
     }
 
-    public void setPhotoUrl(String photoUrl) {
+    public void setPhotoUrl(@Nullable String photoUrl) {
         this.photoUrl = photoUrl;
     }
 
+    @Nullable
     public String getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(@Nullable String imageUrl) {
         this.imageUrl = imageUrl;
     }
 }
