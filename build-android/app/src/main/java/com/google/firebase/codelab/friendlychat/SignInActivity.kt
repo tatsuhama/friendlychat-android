@@ -30,32 +30,29 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.codelab.friendlychat.SignInActivity
 
 class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnClickListener {
-    private var mSignInButton: SignInButton? = null
-    private var mGoogleApiClient: GoogleApiClient? = null
-    // Firebase instance variables
-    private var mFirebaseAuth: FirebaseAuth? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_in)
-        // Assign fields
-        mSignInButton = findViewById<View>(R.id.sign_in_button) as SignInButton
-        // Set click listeners
-        mSignInButton!!.setOnClickListener(this)
-        // Configure Google Sign In
+    private val mSignInButton: SignInButton by lazy { findViewById<View>(R.id.sign_in_button) as SignInButton }
+    private val mGoogleApiClient: GoogleApiClient by lazy {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build()
-        mGoogleApiClient = GoogleApiClient.Builder(this)
+        GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build()
-        // Initialize FirebaseAuth
-        mFirebaseAuth = FirebaseAuth.getInstance()
+    }
+    // Firebase instance variables
+    private val mFirebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_sign_in)
+        // Set click listeners
+        mSignInButton.setOnClickListener(this)
+        // Configure Google Sign In
+
     }
 
     override fun onClick(v: View) {
@@ -69,8 +66,8 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-    override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-// be available.
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
         Log.d(TAG, "onConnectionFailed:$connectionResult")
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show()
     }
@@ -81,7 +78,7 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
         if (requestCode == RC_SIGN_IN) {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result.isSuccess) { // Google Sign-In was successful, authenticate with Firebase
-                val account = result.signInAccount
+                val account = result.signInAccount!!
                 firebaseAuthWithGoogle(account)
             } else { // Google Sign-In failed
                 Log.e(TAG, "Google Sign-In failed.")
@@ -89,10 +86,10 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
         }
     }
 
-    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount?) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct!!.id)
+    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.id)
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
-        mFirebaseAuth!!.signInWithCredential(credential)
+        mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this) { task ->
                     if (!task.isSuccessful) {
                         Log.d(TAG, "WAT")
@@ -101,12 +98,11 @@ class SignInActivity : AppCompatActivity(), OnConnectionFailedListener, View.OnC
                     }
                     Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful)
                     // If sign in fails, display a message to the user. If sign in succeeds
-// the auth state listener will be notified and logic to handle the
-// signed in user can be handled in the listener.
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
                     if (!task.isSuccessful) {
                         Log.w(TAG, "signInWithCredential", task.exception)
-                        Toast.makeText(this@SignInActivity, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@SignInActivity, "Authentication failed.", Toast.LENGTH_SHORT).show()
                     } else {
                         Log.d(TAG, "i am working")
                         startActivity(Intent(this@SignInActivity, MainActivity::class.java))
