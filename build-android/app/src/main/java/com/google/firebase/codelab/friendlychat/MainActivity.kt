@@ -62,7 +62,12 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private var mUsername: String? = null
     private var mPhotoUrl: String? = null
     private var mSharedPreferences: SharedPreferences? = null
-    private var mGoogleApiClient: GoogleApiClient? = null
+    private val googleApiClient: GoogleApiClient by lazy {
+        GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .build()
+    }
     private var mSendButton: Button? = null
     private var mMessageRecyclerView: RecyclerView? = null
     private var mLinearLayoutManager: LinearLayoutManager? = null
@@ -92,10 +97,6 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 mPhotoUrl = mFirebaseUser!!.photoUrl.toString()
             }
         }
-        mGoogleApiClient = GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build()
         // Initialize ProgressBar and RecyclerView.
         mProgressBar = findViewById<View>(R.id.progressBar) as ProgressBar
         mMessageRecyclerView = findViewById<View>(R.id.messageRecyclerView) as RecyclerView
@@ -245,7 +246,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
                 firebaseAuth!!.signOut()
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient)
+                Auth.GoogleSignInApi.signOut(googleApiClient)
                 mUsername = ANONYMOUS
                 startActivity(Intent(this, SignInActivity::class.java))
                 finish()
