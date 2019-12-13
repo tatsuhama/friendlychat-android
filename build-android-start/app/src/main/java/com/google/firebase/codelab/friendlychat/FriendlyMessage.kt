@@ -15,6 +15,10 @@
  */
 package com.google.firebase.codelab.friendlychat
 
-class FriendlyMessage(val text: String?, val name: String, val photoUrl: String?, val imageUrl: String?) {
+class FriendlyMessage {
     var id: String? = null
+    var text: String? = null
+    var name: String = ""
+    var photoUrl: String? = null
+    var imageUrl: String? = null
 }
