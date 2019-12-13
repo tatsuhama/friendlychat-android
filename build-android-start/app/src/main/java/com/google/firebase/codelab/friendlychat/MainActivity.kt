@@ -49,7 +49,12 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private var username: String = ANONYMOUS // Set default username is anonymous.
     private val mPhotoUrl: String? = null
     private var mSharedPreferences: SharedPreferences? = null
-    private var mGoogleApiClient: GoogleApiClient? = null
+    private val googleApiClient: GoogleApiClient by lazy {
+        GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .build()
+    }
     private var mSendButton: Button? = null
     private var mMessageRecyclerView: RecyclerView? = null
     private var mLinearLayoutManager: LinearLayoutManager? = null
@@ -61,10 +66,6 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        mGoogleApiClient = GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build()
         // Initialize ProgressBar and RecyclerView.
         mProgressBar = findViewById<View>(R.id.progressBar) as ProgressBar
         mMessageRecyclerView = findViewById<View>(R.id.messageRecyclerView) as RecyclerView
