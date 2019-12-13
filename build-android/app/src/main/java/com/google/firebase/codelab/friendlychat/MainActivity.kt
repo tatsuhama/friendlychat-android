@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     private fun getFirebaseUser(): FirebaseUser? = firebaseAuth.currentUser
-    private var mFirebaseDatabaseReference: DatabaseReference? = null
+    private val firebaseDatabaseReference: DatabaseReference by lazy { FirebaseDatabase.getInstance().reference }
     private val firebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> by lazy { createAdapter() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,8 +100,6 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         // Initialize ProgressBar and RecyclerView.
         linearLayoutManager.stackFromEnd = true
         messageRecyclerView.layoutManager = linearLayoutManager
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().reference
-
         firebaseAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
@@ -135,7 +133,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                     mUsername,
                     mPhotoUrl,
                     null /* no image */)
-            mFirebaseDatabaseReference!!.child(MESSAGES_CHILD)
+            firebaseDatabaseReference.child(MESSAGES_CHILD)
                     .push().setValue(friendlyMessage)
             messageEditText.setText("")
         }
@@ -155,7 +153,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
             }
             friendlyMessage
         }
-        val messagesRef = mFirebaseDatabaseReference!!.child(MESSAGES_CHILD)
+        val messagesRef = firebaseDatabaseReference.child(MESSAGES_CHILD)
         val options = FirebaseRecyclerOptions.Builder<FriendlyMessage>()
                 .setQuery(messagesRef, parser)
                 .build()
@@ -266,7 +264,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                     Log.d(TAG, "Uri: $uri")
                     val tempMessage = FriendlyMessage(null, mUsername, mPhotoUrl,
                             LOADING_IMAGE_URL)
-                    mFirebaseDatabaseReference!!.child(MESSAGES_CHILD).push()
+                    firebaseDatabaseReference.child(MESSAGES_CHILD).push()
                             .setValue(tempMessage) { databaseError, databaseReference ->
                                 if (databaseError == null) {
                                     val key = databaseReference.key
@@ -295,7 +293,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                             if (task.isSuccessful) {
                                 val friendlyMessage = FriendlyMessage(null, mUsername, mPhotoUrl,
                                         task.result.toString())
-                                mFirebaseDatabaseReference!!.child(MESSAGES_CHILD).child(key!!)
+                                firebaseDatabaseReference.child(MESSAGES_CHILD).child(key!!)
                                         .setValue(friendlyMessage)
                             }
                         }
