@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private fun getFirebaseUser(): FirebaseUser? = firebaseAuth.currentUser
     private val firebaseDatabaseReference: DatabaseReference by lazy { FirebaseDatabase.getInstance().reference }
     private val firebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> by lazy { createAdapter() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -106,8 +107,8 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 val friendlyMessageCount = firebaseAdapter.getItemCount()
                 val lastVisiblePosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 // If the recycler view is initially being loaded or the
-// user is at the bottom of the list, scroll to the bottom
-// of the list to show the newly added message.
+                // user is at the bottom of the list, scroll to the bottom
+                // of the list to show the newly added message.
                 if (lastVisiblePosition == -1 ||
                         positionStart >= friendlyMessageCount - 1 &&
                         lastVisiblePosition == positionStart - 1) {
@@ -157,6 +158,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         val options = FirebaseRecyclerOptions.Builder<FriendlyMessage>()
                 .setQuery(messagesRef, parser)
                 .build()
+
         return object : FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options) {
             override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): MessageViewHolder {
                 val inflater = LayoutInflater.from(viewGroup.context)
@@ -172,10 +174,9 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                     viewHolder.messageTextView.visibility = TextView.VISIBLE
                     viewHolder.messageImageView.visibility = ImageView.GONE
                 } else if (friendlyMessage.imageUrl != null) {
-                    val imageUrl = friendlyMessage.imageUrl
+                    val imageUrl = friendlyMessage.imageUrl!!
                     if (imageUrl.startsWith("gs://")) {
-                        val storageReference = FirebaseStorage.getInstance()
-                                .getReferenceFromUrl(imageUrl)
+                        val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl)
                         storageReference.downloadUrl.addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 val downloadUrl = task.result.toString()
@@ -183,8 +184,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                                         .load(downloadUrl)
                                         .into(viewHolder.messageImageView)
                             } else {
-                                Log.w(TAG, "Getting download url was not successful.",
-                                        task.exception)
+                                Log.w(TAG, "Getting download url was not successful.", task.exception)
                             }
                         }
                     } else {
@@ -197,8 +197,8 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 }
                 viewHolder.messengerTextView.text = friendlyMessage.name
                 if (friendlyMessage.photoUrl == null) {
-                    viewHolder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(this@MainActivity,
-                            R.drawable.ic_account_circle_black_36dp))
+                    val drawable = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_account_circle_black_36dp)
+                    viewHolder.messengerImageView.setImageDrawable(drawable)
                 } else {
                     Glide.with(this@MainActivity)
                             .load(friendlyMessage.photoUrl)
@@ -211,7 +211,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     public override fun onStart() {
         super.onStart()
         // Check if user is signed in.
-// TODO: Add code to check if user is signed in.
+        // TODO: Add code to check if user is signed in.
     }
 
     public override fun onPause() {
@@ -248,8 +248,8 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         }
     }
 
-    override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-// be available.
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
         Log.d(TAG, "onConnectionFailed:$connectionResult")
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show()
     }
@@ -262,8 +262,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 if (data != null) {
                     val uri = data.data
                     Log.d(TAG, "Uri: $uri")
-                    val tempMessage = FriendlyMessage(null, mUsername, mPhotoUrl,
-                            LOADING_IMAGE_URL)
+                    val tempMessage = FriendlyMessage(null, mUsername, mPhotoUrl, LOADING_IMAGE_URL)
                     firebaseDatabaseReference.child(MESSAGES_CHILD).push()
                             .setValue(tempMessage) { databaseError, databaseReference ->
                                 if (databaseError == null) {
@@ -274,8 +273,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                                             .child(uri.lastPathSegment)
                                     putImageInStorage(storageReference, uri, key)
                                 } else {
-                                    Log.w(TAG, "Unable to write message to database.",
-                                            databaseError.toException())
+                                    Log.w(TAG, "Unable to write message to database.", databaseError.toException())
                                 }
                             }
                 }
@@ -284,16 +282,15 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     }
 
     private fun putImageInStorage(storageReference: StorageReference, uri: Uri, key: String?) {
-        storageReference.putFile(uri).addOnCompleteListener(this@MainActivity
-        ) { task ->
+        storageReference.putFile(uri).addOnCompleteListener(this@MainActivity) { task ->
             if (task.isSuccessful) {
                 task.result!!.metadata!!.reference!!.downloadUrl
-                        .addOnCompleteListener(this@MainActivity
-                        ) { task ->
+                        .addOnCompleteListener(this@MainActivity) { task ->
                             if (task.isSuccessful) {
-                                val friendlyMessage = FriendlyMessage(null, mUsername, mPhotoUrl,
-                                        task.result.toString())
-                                firebaseDatabaseReference.child(MESSAGES_CHILD).child(key!!)
+                                val friendlyMessage = FriendlyMessage(null, mUsername, mPhotoUrl, task.result.toString())
+                                firebaseDatabaseReference
+                                        .child(MESSAGES_CHILD)
+                                        .child(key!!)
                                         .setValue(friendlyMessage)
                             }
                         }
