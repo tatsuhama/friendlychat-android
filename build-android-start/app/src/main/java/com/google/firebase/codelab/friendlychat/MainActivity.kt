@@ -55,42 +55,36 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build()
     }
-    private var mSendButton: Button? = null
-    private var mMessageRecyclerView: RecyclerView? = null
-    private var mLinearLayoutManager: LinearLayoutManager? = null
-    private var mProgressBar: ProgressBar? = null
-    private var mMessageEditText: EditText? = null
-    private var mAddMessageImageView: ImageView? = null
+    private val sendButton: Button by lazy { findViewById<View>(R.id.sendButton) as Button }
+    private val messageRecyclerView: RecyclerView by lazy { findViewById<View>(R.id.messageRecyclerView) as RecyclerView }
+    private val linearLayoutManager: LinearLayoutManager by lazy { LinearLayoutManager(this) }
+    private val progressBar: ProgressBar by lazy { findViewById<View>(R.id.progressBar) as ProgressBar }
+    private val messageEditText: EditText by lazy { findViewById<View>(R.id.messageEditText) as EditText }
+    private val addMessageImageView: ImageView by lazy { findViewById<View>(R.id.addMessageImageView) as ImageView }
+
     // Firebase instance variables
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        // Initialize ProgressBar and RecyclerView.
-        mProgressBar = findViewById<View>(R.id.progressBar) as ProgressBar
-        mMessageRecyclerView = findViewById<View>(R.id.messageRecyclerView) as RecyclerView
-        mLinearLayoutManager = LinearLayoutManager(this)
-        mLinearLayoutManager!!.stackFromEnd = true
-        mMessageRecyclerView!!.layoutManager = mLinearLayoutManager
-        mProgressBar!!.visibility = ProgressBar.INVISIBLE
-        mMessageEditText = findViewById<View>(R.id.messageEditText) as EditText
-        mMessageEditText!!.addTextChangedListener(object : TextWatcher {
+        linearLayoutManager.stackFromEnd = true
+        messageRecyclerView.layoutManager = linearLayoutManager
+        progressBar.visibility = ProgressBar.INVISIBLE
+        messageEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 if (charSequence.toString().trim { it <= ' ' }.length > 0) {
-                    mSendButton!!.isEnabled = true
+                    sendButton.isEnabled = true
                 } else {
-                    mSendButton!!.isEnabled = false
+                    sendButton.isEnabled = false
                 }
             }
 
             override fun afterTextChanged(editable: Editable) {}
         })
-        mSendButton = findViewById<View>(R.id.sendButton) as Button
-        mSendButton!!.setOnClickListener {
+        sendButton.setOnClickListener {
             // Send messages on click.
         }
-        mAddMessageImageView = findViewById<View>(R.id.addMessageImageView) as ImageView
-        mAddMessageImageView!!.setOnClickListener {
+        addMessageImageView.setOnClickListener {
             // Select image for image message on click.
         }
     }
