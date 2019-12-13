@@ -125,6 +125,9 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
         })
         sendButton.setOnClickListener {
             // Send messages on click.
+            val friendlyMessage = FriendlyMessage(messageEditText.text.toString(), username, photoUrl, null)
+            firebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(friendlyMessage)
+            messageEditText.setText("")
         }
         addMessageImageView.setOnClickListener {
             // Select image for image message on click.
