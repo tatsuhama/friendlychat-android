@@ -34,6 +34,7 @@ import android.util.Log
 import android.view.*
 import android.widget.*
 import com.bumptech.glide.Glide
+import com.crashlytics.android.Crashlytics
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.firebase.ui.database.SnapshotParser
@@ -237,7 +238,15 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
             finish()
             true
         }
+        R.id.crash_menu -> {
+            causeCrash()
+            true
+        }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun causeCrash() {
+        Crashlytics.getInstance().crash();
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
