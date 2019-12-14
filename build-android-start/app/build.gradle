@@ -54,6 +54,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-inappmessaging-display'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-config'
     // Firebase UI
     implementation 'com.firebaseui:firebase-ui-database:3.3.1'
 
