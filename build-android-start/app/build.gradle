@@ -57,6 +57,8 @@ dependencies {
     // Firebase UI
     implementation 'com.firebaseui:firebase-ui-database:3.3.1'
 
+    implementation 'com.crashlytics.sdk.android:crashlytics'
+
     // Testing dependencies
     androidTestImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
