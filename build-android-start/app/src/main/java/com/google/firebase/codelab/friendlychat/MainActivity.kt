@@ -41,6 +41,7 @@ import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private val firebaseUser: FirebaseUser? get() = firebaseAuth.currentUser
     private val firebaseDatabaseReference: DatabaseReference by lazy { FirebaseDatabase.getInstance().reference }
     private val firebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> by lazy { createAdapter() }
+    private val firebaseAnalytics: FirebaseAnalytics by lazy { FirebaseAnalytics.getInstance(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,6 +133,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
             val friendlyMessage = FriendlyMessage(messageEditText.text.toString(), username, photoUrl, null)
             firebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(friendlyMessage)
             messageEditText.setText("")
+            logMessageSent()
         }
         addMessageImageView.setOnClickListener {
             // Select image for image message on click.
@@ -283,6 +286,11 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                 Log.w(TAG, "Image upload task was not successful.", task1.exception)
             }
         }
+    }
+
+    private fun logMessageSent() {
+        // Log message has been sent.
+        firebaseAnalytics.logEvent("message", null)
     }
 
     companion object {
