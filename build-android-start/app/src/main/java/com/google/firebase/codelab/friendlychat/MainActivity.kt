@@ -29,6 +29,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
@@ -47,6 +48,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
@@ -82,6 +86,7 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
     private val firebaseDatabaseReference: DatabaseReference by lazy { FirebaseDatabase.getInstance().reference }
     private val firebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> by lazy { createAdapter() }
     private val firebaseAnalytics: FirebaseAnalytics by lazy { FirebaseAnalytics.getInstance(this) }
+    private val firebaseRemoteConfig: FirebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,6 +148,62 @@ class MainActivity : AppCompatActivity(), OnConnectionFailedListener {
                     .setType("image/*")
             startActivityForResult(intent, REQUEST_IMAGE)
         }
+
+        // Define Firebase Remote Config Settings.
+        val firebaseRemoteConfigSettings = FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(true)
+                .build()
+
+        // Define default config values. Defaults are used when fetched config values are not
+        // available. Eg: if an error occurred fetching values from the server.
+        val defaultConfigMap = mapOf("friendly_msg_length" to 10L)
+
+        // Apply config settings and default values.
+        firebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings)
+        firebaseRemoteConfig.setDefaults(defaultConfigMap)
+
+        // Fetch remote config.
+        fetchConfig()
+    }
+
+    // Fetch the config to determine the allowed length of messages.
+    private fun fetchConfig() {
+        val cacheExpiration = if (firebaseRemoteConfig.info.configSettings.isDeveloperModeEnabled) {
+            // If developer mode is enabled reduce cacheExpiration to 0 so that
+            // each fetch goes to the server. This should not be used in release builds.
+            0
+        } else {
+            3600L // 1 hour in seconds
+        }
+        firebaseRemoteConfig.fetch(cacheExpiration)
+                .addOnSuccessListener {
+                    // Make the fetched config available via FirebaseRemoteConfig get<type> calls.
+                    firebaseRemoteConfig.activateFetched()
+                    applyRetrievedLengthLimit()
+                }
+                .addOnFailureListener { e ->
+                    // There has been an error fetching the config
+                    Log.w(TAG, "Error fetching config: " + e.message)
+                    applyRetrievedLengthLimit()
+                }
+        // print app's Instance ID token.
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "Remote instance ID token: " + task.result!!.token)
+            }
+        }
+    }
+
+
+    /**
+     * Apply retrieved length limit to edit text field.
+     * This result may be fresh from the server or it may be from cached
+     * values.
+     */
+    private fun applyRetrievedLengthLimit() {
+        val friendly_msg_length = firebaseRemoteConfig.getLong("friendly_msg_length").toInt()
+        messageEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(friendly_msg_length))
+        Log.d(TAG, "FML is: $friendly_msg_length")
     }
 
     private fun createAdapter(): FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> {
