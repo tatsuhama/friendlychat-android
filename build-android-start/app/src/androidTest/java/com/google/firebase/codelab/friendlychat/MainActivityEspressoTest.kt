@@ -32,4 +32,9 @@ class MainActivityEspressoTest {
     @Rule
     @JvmField
     var mActivityRule = ActivityTestRule(MainActivity::class.java)
+
+    @Test
+    fun verifySignUpButtonDisplayed() {
+        Espresso.onView(ViewMatchers.withId(R.id.messageRecyclerView)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
 }
